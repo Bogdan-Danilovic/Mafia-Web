@@ -75,7 +75,8 @@ export function HomeScreen() {
         className="w-full max-w-sm flex flex-col items-center gap-8"
       >
         {/* Logo */}
-        <motion.div variants={fadeUp} className="text-center">
+        <motion.div variants={fadeUp} className="text-center flex flex-col items-center">
+          <div className="text-6xl mb-3">🎭</div>
           <h1 className="text-4xl font-bold tracking-tight text-glow">
             <span className="text-violet-400">IM</span>
             <span className="text-slate-100">POSTOR</span>

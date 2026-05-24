@@ -11,7 +11,7 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   title: 'Impostor — Igra Socijalnog Snalaženja',
   description: 'Otkrij ko je impostor među vama! Multiplayer igra u browseru.',
-  manifest: '/manifest.json',
+  metadataBase: new URL('https://impostor-web.vercel.app'),
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
