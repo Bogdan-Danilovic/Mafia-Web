@@ -175,6 +175,8 @@ function validateConfig(config: Record<string, unknown>): config is GameConfig {
 function adaptImports(content: string, gameId: string): string {
   let result = content;
 
+  // === Absolute imports (@/) ===
+
   // @/lib/types → @/lib/types/{gameId}
   result = result.replace(
     /from\s+['"]@\/lib\/types['"]/g,
@@ -197,6 +199,62 @@ function adaptImports(content: string, gameId: string): string {
   result = result.replace(
     /from\s+['"]@\/components\/ui\/([^'"]+)['"]/g,
     `from '@/components/shared/$1'`
+  );
+
+  // === Relative imports (./) ===
+
+  // ./firebase or ../firebase → @/lib/firebase
+  result = result.replace(
+    /from\s+['"](\.\.?\/)+firebase['"]/g,
+    `from '@/lib/firebase'`
+  );
+
+  // ./types or ../types → @/lib/types/{gameId}
+  result = result.replace(
+    /from\s+['"](\.\.?\/)+types['"]/g,
+    `from '@/lib/types/${gameId}'`
+  );
+
+  // ./types/core or ../types/core → @/lib/types/core
+  result = result.replace(
+    /from\s+['"](\.\.?\/)+types\/core['"]/g,
+    `from '@/lib/types/core'`
+  );
+
+  // ./utils or ../utils → @/lib/utils
+  result = result.replace(
+    /from\s+['"](\.\.?\/)+utils['"]/g,
+    `from '@/lib/utils'`
+  );
+
+  // ./prompts/index or ../prompts/index or ./prompts or ../prompts → @/lib/prompts/index
+  result = result.replace(
+    /from\s+['"](\.\.?\/)+prompts(?:\/index)?['"]/g,
+    `from '@/lib/prompts/index'`
+  );
+
+  // ./firestore/core or ../firestore/core → @/lib/firestore/core
+  result = result.replace(
+    /from\s+['"](\.\.?\/)+firestore\/core['"]/g,
+    `from '@/lib/firestore/core'`
+  );
+
+  // ./firestore or ../firestore → @/lib/firestore/{gameId}
+  result = result.replace(
+    /from\s+['"](\.\.?\/)+firestore['"]/g,
+    `from '@/lib/firestore/${gameId}'`
+  );
+
+  // ../hooks/usePlayer or ./hooks/usePlayer → @/hooks/usePlayer
+  result = result.replace(
+    /from\s+['"](\.\.?\/)+hooks\/usePlayer['"]/g,
+    `from '@/hooks/usePlayer'`
+  );
+
+  // ../hooks/useRoom or ./hooks/useRoom → @/hooks/useRoom
+  result = result.replace(
+    /from\s+['"](\.\.?\/)+hooks\/useRoom['"]/g,
+    `from '@/hooks/useRoom'`
   );
 
   return result;
