@@ -1,9 +1,15 @@
 const CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
+function secureRandom(max: number): number {
+  const arr = new Uint32Array(1);
+  crypto.getRandomValues(arr);
+  return arr[0] % max;
+}
+
 export function generateRoomCode(): string {
   let code = '';
   for (let i = 0; i < 5; i++) {
-    code += CHARS[Math.floor(Math.random() * CHARS.length)];
+    code += CHARS[secureRandom(CHARS.length)];
   }
   return code;
 }
@@ -22,7 +28,11 @@ export function selectImpostors(
   playerIds: string[],
   count: number
 ): string[] {
-  const shuffled = [...playerIds].sort(() => Math.random() - 0.5);
+  const shuffled = [...playerIds];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = secureRandom(i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
   return shuffled.slice(0, count);
 }
 

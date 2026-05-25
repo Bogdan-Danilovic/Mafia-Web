@@ -12,11 +12,5 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-if (!firebaseConfig.projectId) {
-  console.error(
-    '[Firebase] NEXT_PUBLIC_FIREBASE_PROJECT_ID nije podešen. Proveri .env.local fajl.'
-  );
-}
-
 const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
 export const db = getFirestore(app);

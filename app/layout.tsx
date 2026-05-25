@@ -9,13 +9,13 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: 'Impostor — Igra Socijalnog Snalaženja',
-  description: 'Otkrij ko je impostor među vama! Multiplayer igra u browseru.',
+  title: 'GameHub — Društvene igre u browseru',
+  description: 'Tvoj hub za društvene igre. Impostor, Alias, Trivia i više!',
   metadataBase: new URL('https://impostor-web.vercel.app'),
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'Impostor',
+    title: 'GameHub',
   },
 };
 
@@ -25,6 +25,7 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({

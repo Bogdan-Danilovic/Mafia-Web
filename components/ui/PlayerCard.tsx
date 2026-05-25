@@ -11,10 +11,18 @@ interface Props {
   onKick?: () => void;
 }
 
-const AVATARS = ['🎭', '🎪', '🎨', '🎯', '🎲', '🎮', '🃏', '🎩', '🦊', '🐺', '🦉', '🐙'];
+const AVATARS = ['🦊', '🐺', '🦉', '🐙', '🦝', '🐸', '🦋', '🐧', '🦎', '🐬', '🦅', '🐻'];
+
+function hashName(name: string): number {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
+  }
+  return Math.abs(hash);
+}
 
 export function PlayerCard({ player, isHost, isSelf, canKick, onKick }: Props) {
-  const avatarIndex = player.id.charCodeAt(0) % AVATARS.length;
+  const avatarIndex = hashName(player.name) % AVATARS.length;
 
   return (
     <motion.div
@@ -29,7 +37,6 @@ export function PlayerCard({ player, isHost, isSelf, canKick, onKick }: Props) {
       className={`
         flex items-center gap-3 px-4 py-3 rounded-xl
         ${isSelf ? 'bg-violet-500/15 border border-violet-500/30' : 'bg-surface/60 border border-slate-600/30'}
-        ${!player.isConnected ? 'opacity-40' : ''}
       `}
     >
       <span className="text-xl">{AVATARS[avatarIndex]}</span>
@@ -46,7 +53,7 @@ export function PlayerCard({ player, isHost, isSelf, canKick, onKick }: Props) {
           )}
           {isHost && (
             <span className="text-[10px] text-amber-400 uppercase tracking-wider font-semibold">
-              host
+              👑 host
             </span>
           )}
         </div>
@@ -58,7 +65,7 @@ export function PlayerCard({ player, isHost, isSelf, canKick, onKick }: Props) {
       {canKick && !isSelf && (
         <button
           onClick={onKick}
-          className="text-xs text-slate-500 hover:text-red-400 transition-colors px-2 py-1"
+          className="flex items-center justify-center w-11 h-11 -mr-2 text-sm text-slate-500 hover:text-red-400 active:text-red-300 transition-colors rounded-lg"
         >
           ✕
         </button>

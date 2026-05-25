@@ -17,14 +17,23 @@ const fadeUp = {
   show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
 };
 
+const shake = {
+  x: [0, -8, 8, -6, 6, -3, 3, 0],
+  transition: { duration: 0.4 },
+};
+
 export function HomeScreen() {
   const router = useRouter();
   const [name, setName] = useState('');
   const [roomCode, setRoomCode] = useState('');
   const [error, setError] = useState('');
+  const [errorKey, setErrorKey] = useState(0);
   const [loading, setLoading] = useState<'create' | 'join' | null>(null);
 
-  const canAct = name.trim().length >= 2;
+  const NAME_REGEX = /^[\p{L}\p{N} ]+$/u;
+  const trimmedName = name.trim();
+  const nameValid = trimmedName.length >= 2 && trimmedName.length <= 16 && NAME_REGEX.test(trimmedName);
+  const canAct = nameValid;
 
   async function handleCreate() {
     if (!canAct) return;
@@ -36,10 +45,14 @@ export function HomeScreen() {
       localStorage.setItem('playerName', name.trim());
       router.push(`/room/${code}`);
     } catch (err) {
-      console.error('[createRoom] Greška:', err);
-      setError(err instanceof Error ? err.message : 'Greška pri kreiranju sobe.');
+      showError(err instanceof Error ? err.message : 'Greška pri kreiranju sobe.');
       setLoading(null);
     }
+  }
+
+  function showError(msg: string) {
+    setError(msg);
+    setErrorKey((k) => k + 1);
   }
 
   async function handleJoin() {
@@ -52,7 +65,7 @@ export function HomeScreen() {
         name.trim()
       );
       if (joinError) {
-        setError(joinError);
+        showError(joinError);
         setLoading(null);
         return;
       }
@@ -60,8 +73,7 @@ export function HomeScreen() {
       localStorage.setItem('playerName', name.trim());
       router.push(`/room/${roomCode.trim().toUpperCase()}`);
     } catch (err) {
-      console.error('[joinRoom] Greška:', err);
-      setError(err instanceof Error ? err.message : 'Greška pri pridruživanju.');
+      showError(err instanceof Error ? err.message : 'Greška pri pridruživanju.');
       setLoading(null);
     }
   }
@@ -143,8 +155,9 @@ export function HomeScreen() {
         {/* Error */}
         {error && (
           <motion.p
+            key={errorKey}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            animate={{ opacity: 1, ...shake }}
             className="text-sm text-red-400 text-center"
           >
             {error}

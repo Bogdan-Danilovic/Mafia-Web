@@ -96,6 +96,12 @@ export function RoleRevealScreen({ room, playerId }: Props) {
                 `}
                 style={{ backfaceVisibility: 'hidden' }}
               >
+                {/* Visual pulse on reveal */}
+                <motion.div
+                  className={`absolute inset-0 rounded-2xl ${isImpostor ? 'bg-red-500/10' : 'bg-violet-500/10'}`}
+                  animate={{ opacity: [0.6, 0, 0.3, 0] }}
+                  transition={{ duration: 0.8, times: [0, 0.3, 0.6, 1] }}
+                />
                 <p className="text-xs text-slate-400 uppercase tracking-widest mb-2">
                   Ti si
                 </p>
@@ -119,13 +125,18 @@ export function RoleRevealScreen({ room, playerId }: Props) {
         </motion.div>
 
         {hasSeen && (
-          <motion.p
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-xs text-slate-500 text-center"
+            className="text-center space-y-1"
           >
-            Zapamti svoju ulogu i pitanje
-          </motion.p>
+            <p className="text-xs text-slate-500">
+              Zapamti svoju ulogu i pitanje
+            </p>
+            <p className="text-[10px] text-slate-600">
+              🔒 Ne pravi screenshot
+            </p>
+          </motion.div>
         )}
 
         {isHost && (

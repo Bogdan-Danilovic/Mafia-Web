@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Room, Category, GameMode } from '@/lib/types';
 import { CATEGORIES } from '@/lib/prompts/index';
@@ -22,6 +22,7 @@ const MODE_LABELS: Record<GameMode, string> = {
 
 export function LobbyScreen({ room, playerId }: Props) {
   const [starting, setStarting] = useState(false);
+  const [copied, setCopied] = useState(false);
   const isHost = room.hostId === playerId;
   const playerCount = room.players.length;
   const canStart = playerCount >= 3;
@@ -52,13 +53,27 @@ export function LobbyScreen({ room, playerId }: Props) {
     await kickPlayer(room.code, kickId);
   }
 
-  async function handleStart() {
+  const [countdown, setCountdown] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (countdown === null) return;
+    if (countdown <= 0) {
+      startGame(room.code);
+      return;
+    }
+    const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+    return () => clearTimeout(timer);
+  }, [countdown, room.code]);
+
+  const handleStart = useCallback(() => {
     setStarting(true);
-    await startGame(room.code);
-  }
+    setCountdown(3);
+  }, []);
 
   function copyCode() {
     navigator.clipboard.writeText(room.code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
   }
 
   return (
@@ -79,16 +94,41 @@ export function LobbyScreen({ room, playerId }: Props) {
           >
             {room.code}
           </button>
-          <p className="text-[10px] text-slate-500 mt-1">
-            tapni da kopiraš
+          <p className="text-[10px] mt-1">
+            {copied ? (
+              <motion.span
+                initial={{ opacity: 0, y: 4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-emerald-400"
+              >
+                Kopirano!
+              </motion.span>
+            ) : (
+              <span className="text-slate-500">tapni da kopiraš</span>
+            )}
           </p>
         </motion.div>
 
         {/* Players */}
         <div>
-          <p className="text-xs text-slate-400 uppercase tracking-widest mb-3">
-            Igrači ({playerCount}/12)
-          </p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-slate-400 uppercase tracking-widest">
+              Igrači ({playerCount}/12)
+            </p>
+            {playerCount < 3 && (
+              <p className="text-xs text-amber-400">
+                još {3 - playerCount} do minimuma
+              </p>
+            )}
+          </div>
+          <div className="w-full h-1 bg-surface rounded-full overflow-hidden mb-3">
+            <motion.div
+              className={`h-full rounded-full ${canStart ? 'bg-emerald-500' : 'bg-amber-500'}`}
+              initial={{ width: 0 }}
+              animate={{ width: `${Math.min((playerCount / 3) * 100, 100)}%` }}
+              transition={{ type: 'spring' as const, stiffness: 300, damping: 25 }}
+            />
+          </div>
           <div className="flex flex-col gap-2">
             <AnimatePresence mode="popLayout">
               {room.players.map((p) => (
@@ -243,6 +283,29 @@ export function LobbyScreen({ room, playerId }: Props) {
           )}
         </div>
       </div>
+
+      {/* Countdown overlay */}
+      <AnimatePresence>
+        {countdown !== null && countdown > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80"
+          >
+            <motion.span
+              key={countdown}
+              initial={{ scale: 2.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.5, opacity: 0 }}
+              transition={{ type: 'spring' as const, stiffness: 300, damping: 20 }}
+              className="text-8xl font-bold text-violet-400 text-glow"
+            >
+              {countdown}
+            </motion.span>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
