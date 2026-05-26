@@ -6,6 +6,10 @@ export type RoomStatus =
   | 'discussion'
   | 'voting'
   | 'reveal'
+  | 'roundStart'
+  | 'explaining'
+  | 'roundEnd'
+  | 'scoreboard'
   | 'finished';
 
 export interface BasePlayer {

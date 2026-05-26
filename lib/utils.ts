@@ -18,6 +18,15 @@ export function generatePlayerId(): string {
   return crypto.randomUUID();
 }
 
+export function shuffleArray<T>(arr: T[]): T[] {
+  const shuffled = [...arr];
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = secureRandom(i + 1);
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+  }
+  return shuffled;
+}
+
 export function getImpostorCount(playerCount: number, desired: number): number {
   if (playerCount < 5) return 1;
   const max = Math.floor(playerCount / 3);

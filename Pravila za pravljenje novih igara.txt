@@ -1,0 +1,114 @@
+Ti:
+npx ts-node scripts/add-game.ts https://github.com/Bogdan-Danilovic/Alias-Game
+Claude Code automatski:
+
+Skida kod sa tog GitHub repoa
+Čita game.config.json iz tog repoa
+Kopira komponente u Game Hub
+Adaptira importe
+Dodaje igru u registry
+Build check
+Push na GitHub → Railway redeploy
+
+Rezultat: Nova igra se pojavi na Game Hub sajtu bez da si ti dirао ijedan fajl. 🎯
+Svaki novi repo = nova igra. Samo daš link i sistem radi sve sam.
+
+
+
+
+Koristi /plugin:ecc:github MCP.
+
+Pročitaj github.com/Bogdan-Danilovic/Impostor-Web u potpunosti.
+
+Na osnovu toga što vidiš, napravi:
+
+═══════════════════════════════════════════════
+1. GAME_STANDARD.md
+═══════════════════════════════════════════════
+
+Dokument koji opisuje kako svaki novi game repo 
+mora biti strukturiran da bi scripts/add-game.ts 
+mogao automatski da ga integriše.
+
+Mora sadržati:
+
+A) Obavezna folder struktura:
+   - Koji folderi moraju postojati
+   - Koji fajlovi su obavezni
+   - Koji su opcioni
+
+B) game.config.json — kompletan standard:
+   - Sva obavezna polja sa tipovima i opisom
+   - Sva opcionalna polja
+   - Primjer za Impostor igru
+   - Primjer za Alias igru (hipotetički)
+
+C) Pravila za komponente:
+   - Kako se moraju zvati ekrani
+   - Koji props moraju imati
+   - Koji imports su zabranjeni (hardcoded putanje)
+   - Koje importe sistem automatski adaptira
+
+D) Pravila za TypeScript:
+   - strict mode obavezan
+   - zero any, zero ts-ignore
+   - Koji tipovi se nasljeđuju iz Game Hub core.ts
+
+E) Pravila za dizajn:
+   - Design tokeni koji se moraju koristiti
+   - Koje CSS varijable su dostupne
+   - Font (Space Grotesk)
+   - Animacije (Framer Motion, spring stiffness:300 damping:20)
+   - Mobile-first, dvh ne vh
+
+F) Pravila za Firestore:
+   - Kako se mora zvati kolekcija
+   - Obavezna polja u svakom dokumentu
+   - connectedAlive < 3 graceful end (obavezno)
+
+G) Pravila za rute:
+   - Home: /games/{gameId}
+   - Room: /games/{gameId}/room/[code]
+   - Leave: uvijek na / (Hub)
+
+H) Checklist prije pusha:
+   - npm run build prolazi
+   - tsc --noEmit prolazi
+   - game.config.json validiran
+   - Sve rute ispravne
+
+═══════════════════════════════════════════════
+2. game.config.json ZA IMPOSTOR-WEB
+═══════════════════════════════════════════════
+
+Napravi game.config.json fajl koji odgovara 
+GAME_STANDARD.md i dodaj ga u:
+github.com/Bogdan-Danilovic/Impostor-Web repo
+
+Fajl mora sadržati sve što scripts/add-game.ts 
+treba da zna da bi automatski integrisao igru.
+
+═══════════════════════════════════════════════
+3. game.config.schema.json ZA GAME HUB
+═══════════════════════════════════════════════
+
+Napravi JSON schema fajl u Game Hub repou koji:
+- Validira svaki game.config.json prije integracije
+- Daje jasne greške ako nešto nedostaje
+- Dokumentuje sva polja
+
+═══════════════════════════════════════════════
+PRAVILA
+═══════════════════════════════════════════════
+
+- GAME_STANDARD.md mora biti toliko jasan da 
+  bilo ko može napraviti novu igru bez pitanja
+- Standard se bazira na Impostor-Web kao referenci
+- Sve što Impostor-Web radi ispravno = standard
+- Sve što Impostor-Web radi pogrešno = napomena 
+  u dokumentu šta treba izbjegavati
+
+STOP — prikaži sva 3 fajla — čekaj odobrenje 
+prije nego što išta push-uješ.
+
+Svi odgovori na srpskom jeziku.

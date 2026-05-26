@@ -247,6 +247,7 @@ function adaptImports(content: string, gameId: string): string {
   result = result.replace(/from\s+['"](\.\.?\/)+types['"]/g, `from '@/lib/types/${gameId}'`);
   result = result.replace(/from\s+['"](\.\.?\/)+utils['"]/g, `from '@/lib/utils'`);
   result = result.replace(/from\s+['"](\.\.?\/)+prompts(?:\/index)?['"]/g, `from '@/lib/prompts/index'`);
+  result = result.replace(/from\s+['"](\.\.?\/)+prompts\/([^'"]+)['"]/g, `from '@/lib/prompts/$2'`);
   result = result.replace(/from\s+['"](\.\.?\/)+firestore\/core['"]/g, `from '@/lib/firestore/core'`);
   result = result.replace(/from\s+['"](\.\.?\/)+firestore['"]/g, `from '@/lib/firestore/${gameId}'`);
   result = result.replace(/from\s+['"](\.\.?\/)+hooks\/usePlayer['"]/g, `from '@/hooks/usePlayer'`);
@@ -322,11 +323,13 @@ function adaptFirestoreFile(content: string, gameId: string): string {
     result = result.slice(0, insertPos) + '\n' + coreImportLine + result.slice(insertPos);
   }
 
-  // Add gameType to newRoom return object (after hostId,)
-  result = result.replace(
-    /(function\s+newRoom[\s\S]*?return\s*\{[\s\S]*?hostId,\s*\n)/,
-    `$1    gameType: '${gameId}',\n`
-  );
+  // Add gameType to newRoom return object (after hostId,) if not already present
+  if (!/gameType:\s*['"]/.test(result.match(/function\s+newRoom[\s\S]*?return\s*\{[\s\S]*?\}/)?.[0] ?? '')) {
+    result = result.replace(
+      /(function\s+newRoom[\s\S]*?return\s*\{[\s\S]*?hostId,\s*\n)/,
+      `$1    gameType: '${gameId}',\n`
+    );
+  }
 
   return result;
 }
@@ -387,8 +390,19 @@ function copyPrompts(config: GameConfig, tempGameDir: string, state: RollbackSta
   if (!config.files.prompts) return;
   const src = path.join(tempGameDir, config.files.prompts);
   if (!fs.existsSync(src)) return;
+  const destDir = path.join(ROOT, 'lib', 'prompts');
   log(`Kopiram prompts: ${config.files.prompts} → lib/prompts/`);
-  copyDirAdapted(src, path.join(ROOT, 'lib', 'prompts'), config.id, state);
+  if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    const srcPath = path.join(src, entry.name);
+    const destPath = path.join(destDir, entry.name);
+    if (entry.name === 'index.ts' && fs.existsSync(destPath)) {
+      log(`Preskačem prompts/index.ts (već postoji)`);
+      continue;
+    }
+    if (entry.isDirectory()) copyDirAdapted(srcPath, destPath, config.id, state);
+    else copyFileAdapted(srcPath, destPath, config.id, state);
+  }
 }
 
 function copyComponents(config: GameConfig, tempGameDir: string, state: RollbackState): void {
