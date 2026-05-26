@@ -101,6 +101,13 @@ function writeFileTracked(filePath: string, content: string, state: RollbackStat
   fs.writeFileSync(filePath, content, 'utf-8');
 }
 
+function toPascalCase(str: string): string {
+  return str
+    .split('-')
+    .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+    .join('');
+}
+
 // ─── Validation ──────────────────────────────────────────────────────
 
 function validateConfig(config: Record<string, unknown>): config is GameConfig {
@@ -201,7 +208,7 @@ function adaptImports(content: string, gameId: string): string {
     `from '@/components/shared/$1'`
   );
 
-  // === Relative imports (./) ===
+  // === Relative imports (./ and ../) ===
 
   // ./firebase or ../firebase → @/lib/firebase
   result = result.replace(
@@ -256,6 +263,60 @@ function adaptImports(content: string, gameId: string): string {
     /from\s+['"](\.\.?\/)+hooks\/useRoom['"]/g,
     `from '@/hooks/useRoom'`
   );
+
+  return result;
+}
+
+// ─── Room Page Adaptation ────────────────────────────────────────────
+
+function findRoomTypeName(typesFilePath: string): string | null {
+  if (!fs.existsSync(typesFilePath)) return null;
+  const content = fs.readFileSync(typesFilePath, 'utf-8');
+  const match = content.match(/export\s+interface\s+(\w+Room)\s+extends\s+BaseRoom/);
+  if (match) return match[1];
+  const match2 = content.match(/export\s+interface\s+(\w+Room)\s*\{/);
+  return match2 ? match2[1] : null;
+}
+
+function adaptRoomPage(content: string, gameId: string, roomTypeName: string): string {
+  let result = content;
+
+  // useRoom(code) → useRoom<ImpostorRoom>(code)
+  result = result.replace(
+    /useRoom\s*\(\s*code\s*\)/g,
+    `useRoom<${roomTypeName}>(code)`
+  );
+
+  // Add import for Room type if not already present
+  if (!result.includes(`import`) || !result.includes(roomTypeName)) {
+    const typesImportPath = `@/lib/types/${gameId}`;
+    // Check if there's already an import from this path
+    const existingImport = new RegExp(
+      `import\\s*\\{([^}]*)\\}\\s*from\\s*['"]${typesImportPath.replace(/\//g, '\\/')}['"]`
+    );
+    const existingMatch = result.match(existingImport);
+    if (existingMatch) {
+      // Add roomTypeName to existing import
+      const imports = existingMatch[1];
+      if (!imports.includes(roomTypeName)) {
+        result = result.replace(
+          existingImport,
+          `import {${imports}, ${roomTypeName} } from '${typesImportPath}'`
+        );
+      }
+    } else {
+      // Add new import line after 'use client' or at the top
+      const importLine = `import { ${roomTypeName} } from '${typesImportPath}';\n`;
+      if (result.includes("'use client'")) {
+        result = result.replace(
+          /('use client';?\s*\n)/,
+          `$1\n${importLine}`
+        );
+      } else {
+        result = importLine + result;
+      }
+    }
+  }
 
   return result;
 }
@@ -336,15 +397,30 @@ function copyComponents(config: GameConfig, tempGameDir: string, state: Rollback
 function copyPages(config: GameConfig, tempGameDir: string, state: RollbackState): void {
   const { home, room } = config.files.pages;
 
+  // Detect room type name from the types file
+  const typesPath = path.join(ROOT, 'lib', 'types', `${config.id}.ts`);
+  const roomTypeName = findRoomTypeName(typesPath) ?? `${toPascalCase(config.id)}Room`;
+  log(`Detektovan Room tip: ${roomTypeName}`);
+
+  // Copy home page
   const homeSrc = path.join(tempGameDir, home);
   const homeDest = path.join(ROOT, 'app', 'games', config.id, 'page.tsx');
   log(`Kopiram home stranicu: ${home} → app/games/${config.id}/page.tsx`);
   copyFileAdapted(homeSrc, homeDest, config.id, state);
 
+  // Copy room page with extra adaptation
   const roomSrc = path.join(tempGameDir, room);
   const roomDest = path.join(ROOT, 'app', 'games', config.id, 'room', '[code]', 'page.tsx');
   log(`Kopiram room stranicu: ${room} → app/games/${config.id}/room/[code]/page.tsx`);
-  copyFileAdapted(roomSrc, roomDest, config.id, state);
+
+  if (fs.existsSync(roomSrc)) {
+    let content = fs.readFileSync(roomSrc, 'utf-8');
+    content = adaptImports(content, config.id);
+    content = adaptRoomPage(content, config.id, roomTypeName);
+    writeFileTracked(roomDest, content, state);
+  } else {
+    logError(`Room page ne postoji: ${roomSrc}`);
+  }
 }
 
 // ─── Registry Update ─────────────────────────────────────────────────
@@ -531,7 +607,7 @@ async function main(): Promise<void> {
   };
 
   try {
-    // Copy types
+    // Copy types (must be first — room page reads this to detect type name)
     copyTypes(config, TEMP_DIR, state);
 
     // Copy firestore
@@ -543,7 +619,7 @@ async function main(): Promise<void> {
     // Copy components
     copyComponents(config, TEMP_DIR, state);
 
-    // Copy pages
+    // Copy pages (reads types file to detect Room type name)
     copyPages(config, TEMP_DIR, state);
 
     // Update registry
