@@ -50,7 +50,7 @@ export const GAMES: GameDefinition[] = [
     description: 'Tajni ratnici dobra i zla. Merlin zna istinu — ali ne sme da govori.',
     shortDescription: 'Dedukcija i blef',
     icon: '⚔️',
-    accentColor: '#b45309',
+    accentColor: '#ef4444',
     minPlayers: 5,
     maxPlayers: 10,
     avgDuration: '30-60 min',
