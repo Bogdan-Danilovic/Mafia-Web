@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { AliasRoom } from '@/lib/types/alias';
@@ -56,6 +56,12 @@ export function GameOverScreen({ room, playerId }: Props) {
   const playerTeam = room.players.find((p) => p.id === playerId)?.teamId;
   const isWinner = winner !== null && playerTeam === winner;
 
+  const winnerColor = winner === 'a'
+    ? { text: '#22d3ee', glow: 'rgba(8,145,178,0.5)', label: 'Tim A pobjeđuje!' }
+    : winner === 'b'
+    ? { text: '#fbbf24', glow: 'rgba(245,158,11,0.5)', label: 'Tim B pobjeđuje!' }
+    : null;
+
   async function handleLeave() {
     await leaveRoom(room.code, playerId);
     localStorage.removeItem('playerId');
@@ -63,7 +69,10 @@ export function GameOverScreen({ room, playerId }: Props) {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center flex-1 px-8 py-10 h-screen-safe overflow-y-auto">
+    <div
+      className="relative flex flex-col items-center justify-center flex-1 px-5 py-10 h-screen-safe overflow-y-auto"
+      style={{ background: 'var(--bg-base)' }}
+    >
       {winner && <Confetti />}
 
       <motion.div
@@ -73,21 +82,15 @@ export function GameOverScreen({ room, playerId }: Props) {
         className="relative w-full max-w-[340px] flex flex-col gap-6"
       >
         <motion.div variants={fadeUp} className="text-center">
-          <motion.p
-            className="text-5xl mb-4"
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ delay: 0.3, duration: 0.5, ease: 'easeOut' }}
+          <h2
+            className="text-[30px] font-bold tracking-[-0.03em] leading-tight"
+            style={winnerColor
+              ? { color: winnerColor.text, textShadow: `0 0 30px ${winnerColor.glow}` }
+              : { color: '#f1f5f9' }}
           >
-            {aborted ? '⚠️' : winner === 'a' ? '🏆' : '🏆'}
-          </motion.p>
-          <h2 className="text-[28px] font-bold text-white tracking-[-0.03em] leading-tight">
-            {aborted ? 'Igra prekinuta' :
-             isDraw ? 'Neriješeno!' :
-             winner === 'a' ? 'Tim A pobjeđuje!' : 'Tim B pobjeđuje!'}
+            {aborted ? 'Igra prekinuta' : isDraw ? 'Neriješeno!' : winnerColor?.label}
           </h2>
-          {aborted && (
-            <p className="text-[12px] text-slate-500 mt-2">Premalo igrača za nastavak</p>
-          )}
+          {aborted && <p className="text-[12px] text-slate-500 mt-2">Premalo igrača za nastavak</p>}
           {isWinner && (
             <motion.p
               initial={{ opacity: 0 }}
@@ -103,16 +106,26 @@ export function GameOverScreen({ room, playerId }: Props) {
         {/* Final scores */}
         <motion.div variants={fadeUp} className="flex items-center justify-center gap-8">
           <div className="text-center">
-            <p className={`text-[48px] font-bold tabular-nums leading-none ${winner === 'a' ? 'text-cyan-400' : 'text-slate-500'}`}
-               style={winner === 'a' ? { textShadow: '0 0 25px rgba(8,145,178,0.5)' } : {}}>
+            <p
+              className="text-[48px] font-bold tabular-nums leading-none"
+              style={{
+                color: winner === 'a' ? '#22d3ee' : '#475569',
+                textShadow: winner === 'a' ? '0 0 25px rgba(8,145,178,0.5)' : 'none',
+              }}
+            >
               {room.scores.a}
             </p>
             <p className="text-[10px] text-slate-500 uppercase tracking-wider mt-2">Tim A</p>
           </div>
           <div className="text-[28px] text-slate-700 font-light">:</div>
           <div className="text-center">
-            <p className={`text-[48px] font-bold tabular-nums leading-none ${winner === 'b' ? 'text-amber-400' : 'text-slate-500'}`}
-               style={winner === 'b' ? { textShadow: '0 0 25px rgba(245,158,11,0.5)' } : {}}>
+            <p
+              className="text-[48px] font-bold tabular-nums leading-none"
+              style={{
+                color: winner === 'b' ? '#fbbf24' : '#475569',
+                textShadow: winner === 'b' ? '0 0 25px rgba(245,158,11,0.5)' : 'none',
+              }}
+            >
               {room.scores.b}
             </p>
             <p className="text-[10px] text-slate-500 uppercase tracking-wider mt-2">Tim B</p>
@@ -120,13 +133,17 @@ export function GameOverScreen({ room, playerId }: Props) {
         </motion.div>
 
         {/* Stats */}
-        <motion.div variants={fadeUp} className="flex gap-px w-full overflow-hidden rounded-lg">
+        <motion.div variants={fadeUp} className="flex gap-2 w-full">
           {[
             { v: room.round, l: room.round === 1 ? 'runda' : 'rundi' },
             { v: room.players.length, l: 'igrača' },
-            { v: `${room.scores.a + room.scores.b}`, l: 'ukupno poena' },
+            { v: room.scores.a + room.scores.b, l: 'ukupno poena' },
           ].map((s, i) => (
-            <div key={i} className="flex-1 text-center py-3 bg-white/[0.02]">
+            <div
+              key={i}
+              className="flex-1 text-center py-3 rounded-xl"
+              style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}
+            >
               <p className="text-[16px] font-bold text-white tabular-nums">{s.v}</p>
               <p className="text-[8px] text-slate-500 uppercase tracking-[0.15em] mt-0.5">{s.l}</p>
             </div>
@@ -134,11 +151,16 @@ export function GameOverScreen({ room, playerId }: Props) {
         </motion.div>
 
         {/* Actions */}
-        <motion.div variants={fadeUp} className="flex flex-col gap-2 mt-4">
+        <motion.div variants={fadeUp} className="flex flex-col gap-2 mt-2">
           {isHost ? (
             <button
               onClick={() => playAgain(room.code)}
-              className="w-full py-3.5 rounded-lg text-[13px] font-semibold bg-cyan-600 text-white hover:bg-cyan-500 transition-colors shadow-[0_0_20px_rgba(8,145,178,0.3)]"
+              className="w-full py-3.5 rounded-xl text-[13px] font-semibold text-white transition-all duration-200 active:scale-95 cursor-pointer"
+              style={{
+                background: 'linear-gradient(135deg, #0891b2, #06b6d4)',
+                border: '1px solid rgba(8,145,178,0.5)',
+                boxShadow: '0 0 20px rgba(8,145,178,0.3)',
+              }}
             >
               Nova igra
             </button>
@@ -147,7 +169,8 @@ export function GameOverScreen({ room, playerId }: Props) {
           )}
           <button
             onClick={handleLeave}
-            className="w-full py-3 rounded-lg text-[13px] font-medium text-slate-500 hover:text-slate-300 hover:bg-white/[0.03] transition-colors"
+            className="w-full py-3 rounded-xl text-[13px] font-medium transition-all duration-200 active:scale-95 cursor-pointer"
+            style={{ color: '#475569', background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.05)' }}
           >
             Napusti sobu
           </button>

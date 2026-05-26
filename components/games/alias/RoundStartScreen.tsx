@@ -11,8 +11,8 @@ interface Props {
 }
 
 const TEAM_COLORS = {
-  a: { bg: 'bg-cyan-500', text: 'text-cyan-400', label: 'Tim A', glow: 'rgba(8,145,178,0.5)' },
-  b: { bg: 'bg-amber-500', text: 'text-amber-400', label: 'Tim B', glow: 'rgba(245,158,11,0.5)' },
+  a: { text: 'text-cyan-400', label: 'Tim A', glow: 'rgba(8,145,178,0.55)', orb: 'rgba(8,145,178,0.07)' },
+  b: { text: 'text-amber-400', label: 'Tim B', glow: 'rgba(245,158,11,0.55)', orb: 'rgba(245,158,11,0.07)' },
 };
 
 export function RoundStartScreen({ room, playerId }: Props) {
@@ -36,8 +36,19 @@ export function RoundStartScreen({ room, playerId }: Props) {
   }, [countdown, room.code, isExplainer]);
 
   return (
-    <div className="relative flex flex-col items-center justify-center flex-1 px-8 h-screen-safe overflow-hidden">
-      <div className={`breathing-orb w-[300px] h-[300px] ${team === 'a' ? 'bg-cyan-500/10' : 'bg-amber-500/10'} top-[20%] left-[50%] -translate-x-1/2`} />
+    <div
+      className="relative flex flex-col items-center justify-center flex-1 px-8 h-screen-safe overflow-hidden"
+      style={{ background: 'var(--bg-base)' }}
+    >
+      <div
+        className="pointer-events-none fixed rounded-full"
+        style={{
+          width: 400, height: 400,
+          top: '10%', left: '50%', transform: 'translateX(-50%)',
+          background: `radial-gradient(circle, ${colors.orb}, transparent 70%)`,
+          filter: 'blur(60px)',
+        }}
+      />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -50,7 +61,7 @@ export function RoundStartScreen({ room, playerId }: Props) {
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
           <p className="text-[10px] text-slate-500 tracking-[0.25em] uppercase mb-2">Runda {room.round}</p>
-          <h2 className={`text-[32px] font-bold ${colors.text}`} style={{ textShadow: `0 0 20px ${colors.glow}` }}>
+          <h2 className={`text-[36px] font-bold ${colors.text}`} style={{ textShadow: `0 0 30px ${colors.glow}` }}>
             {colors.label}
           </h2>
         </motion.div>
@@ -62,7 +73,7 @@ export function RoundStartScreen({ room, playerId }: Props) {
           className="flex flex-col items-center gap-2"
         >
           <p className="text-[10px] text-slate-500 tracking-[0.2em] uppercase">Objašnjava</p>
-          <p className="text-[20px] font-bold text-white">
+          <p className="text-[22px] font-bold text-white">
             {isExplainer ? 'Ti!' : explainer?.name ?? '...'}
           </p>
           {isExplainer && (
@@ -70,25 +81,29 @@ export function RoundStartScreen({ room, playerId }: Props) {
           )}
         </motion.div>
 
-        {/* Scoreboard mini */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="flex gap-6"
+          className="flex items-center gap-6"
         >
           <div className="text-center">
-            <p className="text-[24px] font-bold text-cyan-400 tabular-nums">{room.scores.a}</p>
-            <p className="text-[8px] text-slate-500 uppercase tracking-wider">Tim A</p>
+            <p className="text-[28px] font-bold text-cyan-400 tabular-nums leading-none"
+              style={{ textShadow: '0 0 20px rgba(8,145,178,0.5)' }}>
+              {room.scores.a}
+            </p>
+            <p className="text-[8px] text-slate-500 uppercase tracking-wider mt-1">Tim A</p>
           </div>
-          <div className="text-[24px] text-slate-600 font-light">:</div>
+          <div className="text-[24px] text-slate-700 font-light">:</div>
           <div className="text-center">
-            <p className="text-[24px] font-bold text-amber-400 tabular-nums">{room.scores.b}</p>
-            <p className="text-[8px] text-slate-500 uppercase tracking-wider">Tim B</p>
+            <p className="text-[28px] font-bold text-amber-400 tabular-nums leading-none"
+              style={{ textShadow: '0 0 20px rgba(245,158,11,0.5)' }}>
+              {room.scores.b}
+            </p>
+            <p className="text-[8px] text-slate-500 uppercase tracking-wider mt-1">Tim B</p>
           </div>
         </motion.div>
 
-        {/* Countdown */}
         <AnimatePresence mode="wait">
           {countdown > 0 && (
             <motion.span
@@ -97,7 +112,7 @@ export function RoundStartScreen({ room, playerId }: Props) {
               animate={{ scale: 1, opacity: 1, filter: 'blur(0px)' }}
               exit={{ scale: 0.3, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-              className={`text-[80px] font-bold ${colors.text} leading-none tabular-nums mt-4`}
+              className={`text-[80px] font-bold leading-none tabular-nums mt-4 ${colors.text}`}
               style={{ textShadow: `0 0 30px ${colors.glow}` }}
             >
               {countdown}
