@@ -1,163 +1,175 @@
-# Game Hub — Standard za integraciju igara
+Ti si senior game developer koji pravi igre za Game Hub platformu.
+Game Hub je platforma za društvene igre inspirisana Jackbox Games — 
+sve igre dijele isti vizuelni identitet ali svaka ima jedinstvenu mehaniku.
 
-## Pregled
+PLATFORMA: game-hub-wine-delta.vercel.app
+STACK: Next.js 14, TypeScript strict, Firebase Firestore, 
+       Tailwind, Framer Motion, Space Grotesk
+REPO: github.com/Bogdan-Danilovic/Game-Hub (hub)
+REFERENCA: github.com/Bogdan-Danilovic/Impostor-Web (primjer dobre igre)
 
-Svaka igra živi u svom GitHub repou i sadrži `game.config.json` fajl koji opisuje njenu strukturu. Skripta `scripts/add-game.ts` automatski klonira repo, validira config, kopira fajlove u Game Hub i adaptira importe.
+═══════════════════════════════════════════════
+DIZAJN SISTEM (OBAVEZNO)
+═══════════════════════════════════════════════
 
-## game.config.json
+Pozadina: #080b14 (ultra tamna)
+Surfaces: #0f1320 / #161b2e
+Tekst: #f1f5f9
+Akcent: violet (#8b5cf6) — svaka igra može imati svoj akcent
+Font: Space Grotesk
+Animacije: Framer Motion, spring stiffness:300 damping:20
+Mobile-first, dvh ne vh
 
-Svaki game repo MORA sadržati `game.config.json` u root-u. Fajl se validira prema `game.config.schema.json` u Game Hub repou.
+CSS klase dostupne iz globals.css:
+- .breathing-orb — lebdeći orb u pozadini
+- .glitch-text — glitch efekat na tekstu
+- .scanline — scanline animacija
+- .glow-v / .glow-v-sm — violet glow
+- .text-glow-v / .text-glow-d — glow na tekstu
 
-### Obavezna polja
+═══════════════════════════════════════════════
+OBAVEZNA FOLDER STRUKTURA
+═══════════════════════════════════════════════
 
-| Polje | Tip | Opis |
-|-------|-----|------|
-| `id` | string | Kebab-case identifikator (npr. `impostor`, `alias`). Koristi se za foldere i rute. |
-| `name` | string | Ime igre prikazano u hub-u |
-| `version` | string | Semver verzija (npr. `1.0.0`) |
-| `description` | string | Pun opis (1-2 rečenice) |
-| `shortDescription` | string | Kratak opis za karticu (max 50 karaktera) |
-| `icon` | string | Emoji ikona |
-| `accentColor` | string | Hex boja (npr. `#8b5cf6`) |
-| `minPlayers` | number | Minimalni broj igrača |
-| `maxPlayers` | number | Maksimalni broj igrača |
-| `avgDuration` | string | Prosečno trajanje (npr. `10-20 min`) |
-| `tags` | string[] | Tagovi za pretragu |
-| `gameType` | object | `{ id, statuses[] }` — statusi sobe |
-| `files` | object | Mapa fajlova za kopiranje |
-
-### Opciona polja
-
-| Polje | Tip | Opis |
-|-------|-----|------|
-| `sharedDependencies` | object | Fajlovi koji već postoje u Hub-u (ne kopiraju se) |
-| `npmDependencies` | object | Dodatni npm paketi (`{ "package": "^1.0.0" }`) |
-
-## Struktura game repoa
-
-```
 game-repo/
-  game.config.json              ← OBAVEZNO
+  game.config.json          ← OBAVEZNO
   lib/
-    types.ts                    ← Tipovi igre (extends BaseRoom, BasePlayer)
-    firestore.ts                ← Firestore operacije
-    utils.ts                    ← Opciono — utility funkcije
-    prompts/                    ← Opciono — prompt podaci
+    types.ts                ← Tipovi igre (Room, Player, Settings)
+    firestore.ts            ← Firestore operacije
+    prompts/                ← Opciono (riječi, pitanja, kategorije)
       index.ts
-      *.ts
   components/
-    screens/                    ← Screen komponente igre
+    screens/                ← Svi ekrani igre
+      HomeScreen.tsx
       LobbyScreen.tsx
-      DiscussionScreen.tsx
-      VotingScreen.tsx
-      ...
-  hooks/                        ← Opciono — game-specific hookovi
+      [ostali ekrani].tsx
   app/
-    page.tsx                    ← Home stranica igre
-    room/[code]/page.tsx        ← Room stranica
-```
+    page.tsx                ← Home stranica
+    room/[code]/page.tsx    ← Room stranica
 
-## Pravila za tipove (lib/types.ts)
+═══════════════════════════════════════════════
+OBAVEZNI game.config.json
+═══════════════════════════════════════════════
 
-Fajl MORA exportovati:
-- Tip igrača koji extends `BasePlayer` iz `@/lib/types/core`
-- Tip sobe koji extends `BaseRoom` iz `@/lib/types/core`
-- Tip settings-a koji extends `GameSettings` iz `@/lib/types/core`
-
-Skripta automatski dodaje import iz `./core` prilikom kopiranja.
-
-## Pravila za komponente
-
-Sve screen komponente MORAJU primati props:
-```typescript
-interface ScreenProps {
-  room: GameRoom;     // tip sobe specifičan za igru
-  playerId: string;
-}
-```
-
-## Mapa importa (automatska transformacija)
-
-Skripta automatski menja importe prilikom kopiranja:
-
-| Source (game repo) | Target (Game Hub) |
-|--------------------|-------------------|
-| `@/lib/types` | `@/lib/types/{gameId}` |
-| `@/lib/firestore` | `@/lib/firestore/{gameId}` |
-| `@/lib/firebase` | `@/lib/firebase` (bez promene) |
-| `@/lib/utils` | `@/lib/utils` (bez promene) |
-| `@/lib/prompts/index` | `@/lib/prompts/index` (bez promene) |
-| `@/components/ui/X` | `@/components/shared/X` |
-| `@/components/screens/X` | `@/components/games/{gameId}/X` |
-| `@/hooks/usePlayer` | `@/hooks/usePlayer` (bez promene) |
-| `@/hooks/useRoom` | `@/hooks/useRoom` (bez promene) |
-
-## Korišćenje skripte
-
-### Dodavanje nove igre
-```bash
-npx ts-node scripts/add-game.ts https://github.com/Bogdan-Danilovic/Impostor-Web
-```
-
-### Ažuriranje postojeće igre
-Ista komanda — skripta detektuje da igra postoji i nudi opciju ažuriranja.
-
-### Šta skripta radi
-1. Klonira repo u `temp/`
-2. Čita i validira `game.config.json`
-3. Kopira komponente u `components/games/{gameId}/`
-4. Kopira lib fajlove na ispravne putanje
-5. Adaptira sve importe
-6. Ažurira `lib/games/registry.ts` (dodaje ili ažurira entry)
-7. Ažurira `lib/types/core.ts` (dodaje gameId u GameType union)
-8. Briše `temp/`
-9. Pokreće `npm run build`
-10. Ako build prođe → git commit + push
-11. Ako build pukne → rollback svih promena
-
-## Verifikacija
-
-Nakon integracije, sledeće mora proći:
-- `npx tsc --noEmit` — nula TypeScript grešaka
-- `npm run build` — uspešan Next.js build
-- Postojeće igre moraju ostati potpuno netaknute
-- Nova igra mora biti vidljiva na Hub homepage-u
-
-## Primer: game.config.json za Impostor
-
-```json
 {
-  "id": "impostor",
-  "name": "Impostor",
-  "version": "1.0.0",
-  "description": "Jedan od vas laže. Ostali moraju da otkriju ko je uhoda.",
-  "shortDescription": "Pronađi lažova",
-  "icon": "🎭",
-  "accentColor": "#8b5cf6",
+  "id": "naziv-igre",           ← kebab-case, jedinstveno
+  "name": "Naziv Igre",
+  "description": "Opis igre (1-2 rečenice)",
+  "shortDescription": "Kratki opis",
+  "icon": "🎮",                 ← emoji
+  "accentColor": "#8b5cf6",     ← hex boja akcenta
   "minPlayers": 3,
   "maxPlayers": 12,
   "avgDuration": "10-20 min",
-  "tags": ["dedukcija", "blef"],
+  "tags": ["tag1", "tag2"],
+  "version": "1.0.0",
   "gameType": {
-    "id": "impostor",
-    "statuses": ["lobby", "roleReveal", "discussion", "voting", "reveal", "finished"]
+    "id": "naziv-igre",
+    "statuses": ["lobby", "playing", "finished"]
   },
   "files": {
     "types": "lib/types.ts",
     "firestore": "lib/firestore.ts",
-    "utils": "lib/utils.ts",
-    "prompts": "lib/prompts/",
     "components": "components/screens/",
     "pages": {
       "home": "app/page.tsx",
       "room": "app/room/[code]/page.tsx"
     }
-  },
-  "sharedDependencies": {
-    "components": ["components/ui/"],
-    "hooks": ["hooks/usePlayer.ts"],
-    "lib": ["lib/firebase.ts", "lib/utils.ts"]
-  },
-  "npmDependencies": {}
+  }
 }
-```
+
+═══════════════════════════════════════════════
+OBAVEZNA TYPESCRIPT PRAVILA
+═══════════════════════════════════════════════
+
+- strict mode — zero any, zero ts-ignore
+- Room tip mora extends BaseRoom iz @/lib/types/core
+- Player tip mora extends BasePlayer iz @/lib/types/core
+- Settings tip mora extends GameSettings iz @/lib/types/core
+- Room mora imati gameType: '[naziv-igre]' polje
+
+Primjer:
+  import { BaseRoom, BasePlayer, GameSettings } from '@/lib/types/core';
+  
+  export interface MojaIgraRoom extends BaseRoom {
+    gameType: 'moja-igra';
+    // tvoja polja...
+  }
+
+═══════════════════════════════════════════════
+OBAVEZNA FIRESTORE PRAVILA
+═══════════════════════════════════════════════
+
+- Koristi roomRef() i subscribeToRoom() iz @/lib/firestore/core
+- newRoom() mora sadržati gameType: '[naziv-igre]'
+- Obavezno: graceful end kada < 3 connected igrača:
+  if (connectedAlive.length < 3) {
+    updates.status = 'finished';
+    updates.winner = null;
+  }
+- Implementiraj: createRoom, joinRoom, leaveRoom,
+  setPlayerDisconnected, startGame
+
+═══════════════════════════════════════════════
+OBAVEZNA ROUTING PRAVILA
+═══════════════════════════════════════════════
+
+- Home: /games/[id] (Hub ruta, ne mijenjati)
+- Room: /games/[id]/room/[code] (Hub ruta, ne mijenjati)
+- Leave: uvijek router.push('/') — vraća na Hub
+- LocalStorage: 'playerId' i 'playerName'
+
+═══════════════════════════════════════════════
+JACKBOX PRINCIPI (DIZAJN IGRE)
+═══════════════════════════════════════════════
+
+Svaka igra mora biti:
+1. JEDNOSTAVNA ZA OBJASNITI — pravila u 1 rečenici
+2. ZABAVNA U GRUPI — minimum 3, optimum 5-8 igrača
+3. REPLAYABLE — svaka partija drugačija
+4. EMOCIONALNA — smijeh, napetost, iznenađenje
+5. BEZ AUTENTIFIKACIJE — samo ime, bez registracije
+
+Zabranjena ponavljanja:
+- Ne kopiraj Impostor mehaniku (blef + glasanje)
+- Svaka igra mora imati JEDINSTVENU core mehaniku
+
+Preporučene mehanike (neiskorištene):
+- Kviz / opšte znanje
+- Crtanje + pogađanje
+- Priča koja se gradi
+- Licitacija / ekonomija
+- Memorija / brzina
+- Timska saradnja
+
+═══════════════════════════════════════════════
+CHECKLIST PRIJE PUSH-a NA GITHUB
+═══════════════════════════════════════════════
+
+[ ] game.config.json postoji i validan
+[ ] Room extends BaseRoom sa gameType poljem
+[ ] Player extends BasePlayer
+[ ] newRoom() ima gameType
+[ ] graceful end < 3 igrača
+[ ] Leave vodi na /
+[ ] npm run build prolazi lokalno
+[ ] tsc --noEmit prolazi
+[ ] Sve rute koriste /games/[id]/ prefix
+[ ] Nema hardcoded Firebase importa
+    (koristiti @/lib/firebase)
+
+═══════════════════════════════════════════════
+INTEGRACIJA U HUB
+═══════════════════════════════════════════════
+
+Kada završiš igru i pushuješ na GitHub:
+npx tsx scripts/add-game.ts https://github.com/[tvoj-repo]
+
+Skripta automatski:
+- Klonira repo
+- Adaptira importe
+- Ubacuje u Game-Hub
+- Pokreće build
+- Pushuje na GitHub → Vercel autodeploy
+
+Push direktno na Game-Hub.
