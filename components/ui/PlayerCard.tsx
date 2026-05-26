@@ -1,73 +1,66 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Player } from '@/lib/types';
+import { BasePlayer } from '@/lib/types/core';
 
 interface Props {
-  player: Player;
+  player: BasePlayer & { isAlive?: boolean };
   isHost: boolean;
   isSelf: boolean;
   canKick: boolean;
   onKick?: () => void;
 }
 
-const AVATARS = ['🦊', '🐺', '🦉', '🐙', '🦝', '🐸', '🦋', '🐧', '🦎', '🐬', '🦅', '🐻'];
-
-function hashName(name: string): number {
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = ((hash << 5) - hash + name.charCodeAt(i)) | 0;
-  }
-  return Math.abs(hash);
-}
-
 export function PlayerCard({ player, isHost, isSelf, canKick, onKick }: Props) {
-  const avatarIndex = hashName(player.name) % AVATARS.length;
-
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{
-        opacity: player.isConnected ? 1 : 0.4,
-        scale: 1,
-      }}
-      exit={{ opacity: 0, scale: 0.8 }}
-      transition={{ type: 'spring' as const, stiffness: 400, damping: 25 }}
-      className={`
-        flex items-center gap-3 px-4 py-3 rounded-xl
-        ${isSelf ? 'bg-violet-500/15 border border-violet-500/30' : 'bg-surface/60 border border-slate-600/30'}
-      `}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: player.isConnected ? 1 : 0.3, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
+      transition={{ type: 'spring' as const, stiffness: 400, damping: 28 }}
+      className="group flex items-center gap-3 py-2.5 relative"
     >
-      <span className="text-xl">{AVATARS[avatarIndex]}</span>
-
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-slate-100 truncate">
-            {player.name}
-          </span>
-          {isSelf && (
-            <span className="text-[10px] text-violet-400 uppercase tracking-wider font-semibold">
-              ti
-            </span>
-          )}
-          {isHost && (
-            <span className="text-[10px] text-amber-400 uppercase tracking-wider font-semibold">
-              👑 host
-            </span>
-          )}
-        </div>
-        {!player.isConnected && (
-          <span className="text-[10px] text-slate-500">nije povezan</span>
+      {/* Pulse dot */}
+      <div className="relative flex-shrink-0">
+        <div className={`w-2.5 h-2.5 rounded-full ${isSelf ? 'bg-violet-400' : player.isConnected ? 'bg-emerald-400/70' : 'bg-slate-700'}`} />
+        {player.isConnected && (
+          <motion.div
+            className={`absolute inset-0 rounded-full ${isSelf ? 'bg-violet-400' : 'bg-emerald-400'}`}
+            animate={{ scale: [1, 2.5, 1], opacity: [0.5, 0, 0.5] }}
+            transition={{ repeat: Infinity, duration: 3, ease: 'easeInOut' }}
+          />
         )}
       </div>
+
+      <span className={`text-[14px] font-medium ${isSelf ? 'text-violet-300' : 'text-slate-300'}`}>
+        {player.name}
+      </span>
+
+      {isSelf && (
+        <span className="text-[9px] text-violet-500 tracking-[0.15em] uppercase">
+          ti
+        </span>
+      )}
+
+      {isHost && (
+        <span className="text-[9px] text-amber-500/80 tracking-[0.15em] uppercase">
+          host
+        </span>
+      )}
+
+      {!player.isConnected && (
+        <span className="text-[10px] text-slate-600 ml-auto">offline</span>
+      )}
 
       {canKick && !isSelf && (
         <button
           onClick={onKick}
-          className="flex items-center justify-center w-11 h-11 -mr-2 text-sm text-slate-500 hover:text-red-400 active:text-red-300 transition-colors rounded-lg"
+          className="ml-auto flex items-center justify-center w-8 h-8 text-slate-700 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
         >
-          ✕
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+            <path d="M2 2L10 10M10 2L2 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
         </button>
       )}
     </motion.div>
