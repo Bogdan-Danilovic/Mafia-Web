@@ -41,7 +41,7 @@ export function HomeScreen() {
       const { code, playerId } = await createRoom(trimmedName);
       localStorage.setItem('playerId', playerId);
       localStorage.setItem('playerName', trimmedName);
-      router.push(`/room/${code}`);
+      router.push(`/games/alias/room/${code}`);
     } catch (err) {
       showError(err instanceof Error ? err.message : 'Greška pri kreiranju sobe.');
       setLoading(null);
@@ -58,7 +58,7 @@ export function HomeScreen() {
       if (joinError) { showError(joinError); setLoading(null); return; }
       localStorage.setItem('playerId', playerId);
       localStorage.setItem('playerName', trimmedName);
-      router.push(`/room/${code}`);
+      router.push(`/games/alias/room/${code}`);
     } catch (err) {
       showError(err instanceof Error ? err.message : 'Greška pri pridruživanju.');
       setLoading(null);
