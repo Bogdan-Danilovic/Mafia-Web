@@ -54,3 +54,11 @@ next-env.d.ts
 .trae/
 .windsurf/
 .claude/skills/
+
+# Skills
+.agents/
+.claude/
+skills-lock.json
+.github/prompts/
+**/__pycache__/
+*.pyc
