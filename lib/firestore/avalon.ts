@@ -16,6 +16,7 @@ import {
   MissionResult,
   TeamVote,
   QuestVote,
+  LadyOfTheLakeEntry,
   PLAYER_DISTRIBUTION,
   getMissionTeamSize,
   getSabotagesRequired,
@@ -38,6 +39,7 @@ function newRoom(code: string, hostId: string, player: AvalonPlayer): AvalonRoom
       enableMordred: false,
       enableMorgana: false,
       enableOberon: false,
+      enableLady: false,
     },
     currentMission: 1,
     missionResults: [],
@@ -51,6 +53,7 @@ function newRoom(code: string, hostId: string, player: AvalonPlayer): AvalonRoom
     assassinTarget: null,
     winner: null,
     winReason: null,
+    lady: { enabled: false, currentHolder: null, usedByPlayers: [], history: [] },
     createdAt: Date.now(),
   };
 }
@@ -223,9 +226,20 @@ export async function startGame(code: string): Promise<void> {
     const leaderIndex = Math.floor(Math.random() * players.length);
     const leadered = players.map((p, i) => ({ ...p, isLeader: i === leaderIndex }));
 
+    const ladyEnabled = room.settings.enableLady;
+    const ladyHolder = ladyEnabled
+      ? leadered[Math.floor(Math.random() * leadered.length)].id
+      : null;
+
     tx.update(ref, {
       status: 'nightPhase',
       players: leadered,
+      lady: {
+        enabled: ladyEnabled,
+        currentHolder: ladyHolder,
+        usedByPlayers: ladyHolder ? [ladyHolder] : [],
+        history: [],
+      },
       currentMission: 1,
       missionResults: [],
       goodScore: 0,
@@ -541,6 +555,38 @@ export async function playAgain(code: string): Promise<void> {
       assassinTarget: null,
       winner: null,
       winReason: null,
+      lady: { enabled: false, currentHolder: null, usedByPlayers: [], history: [] },
+    });
+  });
+}
+
+export async function useLadyOfTheLake(
+  code: string,
+  holderId: string,
+  investigatedId: string,
+  declaredAlignment: Loyalty
+): Promise<void> {
+  const ref = roomRef(code);
+  await runTransaction(db, async (tx) => {
+    const snap = await tx.get(ref);
+    if (!snap.exists()) return;
+
+    const room = snap.data() as AvalonRoom;
+    const lady = room.lady;
+    if (!lady?.enabled || lady.currentHolder !== holderId) return;
+    if (lady.usedByPlayers.includes(investigatedId)) return;
+
+    const entry: LadyOfTheLakeEntry = {
+      round: room.currentMission,
+      usedBy: holderId,
+      investigatedPlayer: investigatedId,
+      declaredAlignment,
+    };
+
+    tx.update(ref, {
+      'lady.currentHolder': investigatedId,
+      'lady.usedByPlayers': [...lady.usedByPlayers, investigatedId],
+      'lady.history': [...lady.history, entry],
     });
   });
 }

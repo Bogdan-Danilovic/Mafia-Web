@@ -27,6 +27,21 @@ export interface AvalonSettings extends GameSettings {
   enableMordred: boolean;
   enableMorgana: boolean;
   enableOberon: boolean;
+  enableLady: boolean;
+}
+
+export interface LadyOfTheLakeEntry {
+  round: number;
+  usedBy: string;
+  investigatedPlayer: string;
+  declaredAlignment: Loyalty;
+}
+
+export interface LadyOfTheLake {
+  enabled: boolean;
+  currentHolder: string | null;
+  usedByPlayers: string[];
+  history: LadyOfTheLakeEntry[];
 }
 
 export type AvalonStatus =
@@ -71,6 +86,7 @@ export interface AvalonRoom extends BaseRoom {
   assassinTarget: string | null;
   winner: Winner;
   winReason: WinReason;
+  lady: LadyOfTheLake;
 }
 
 export const PLAYER_DISTRIBUTION: Record<number, { good: number; evil: number }> = {

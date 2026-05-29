@@ -176,6 +176,24 @@ export function LobbyScreen({ room, playerId }: Props) {
                 </button>
               ))}
             </div>
+
+            <div className="w-full h-px bg-white/[0.04]" />
+
+            <button
+              onClick={() => toggleRole('enableLady')}
+              className="flex items-center justify-between py-3 px-3 rounded-lg transition-colors hover:bg-white/[0.02]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-cyan-400" />
+                <div className="text-left">
+                  <span className="text-[13px] text-slate-300 font-medium">Gospa od Jezera</span>
+                  <p className="text-[10px] text-slate-600">Istraži lojalnost između rundi</p>
+                </div>
+              </div>
+              <div className={`w-8 h-[18px] rounded-full transition-colors duration-200 relative ${room.settings.enableLady ? 'bg-cyan-600' : 'bg-white/[0.06]'}`}>
+                <div className={`absolute top-[3px] w-3 h-3 rounded-full bg-white transition-transform duration-200 ${room.settings.enableLady ? 'translate-x-[14px]' : 'translate-x-[3px]'}`} />
+              </div>
+            </button>
           </motion.div>
         )}
 

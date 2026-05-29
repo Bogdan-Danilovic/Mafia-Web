@@ -22,6 +22,17 @@ const ROLE_DISPLAY: Record<string, { name: string; emoji: string; color: string;
   evil:     { name: 'Sluga Zla', emoji: '🐍', color: 'text-red-400',    glow: 'rgba(239,68,68,0.4)' },
 };
 
+const ROLE_FLAVORS: Record<string, string> = {
+  merlin:   'Znaš istinu, ali je ne smeš otkriti. Prepoznaješ zlo — čuvaj se Asasina.',
+  percival: 'Vidiš dva lika u tami. Jedan je tvoj saveznik, drugi te vara.',
+  good:     'Tvoja vera je tvoje jedino oružje. Veruj instinktu.',
+  mordred:  'Merlin te ne vidi. Iskoristi tu prednost.',
+  morgana:  'Percival misli da si Merlin. Igraj ulogu dobro.',
+  assassin: 'Ako dobri pobede, imaš poslednji udarac — pogodi Merlina.',
+  oberon:   'Zlo si, ali usamljeno. Ni tvoji te ne znaju.',
+  evil:     'Služiš Mordreda. Sabotiraj misije, ali ostaj skriven.',
+};
+
 function getRoleInfo(me: AvalonPlayer, room: AvalonRoom): { lines: string[] } {
   const lines: string[] = [];
 
@@ -182,9 +193,15 @@ export function RoleRevealScreen({ room, playerId }: Props) {
                   {display.name}
                 </h2>
 
-                <p className={`text-[12px] mb-6 ${isEvil ? 'text-red-400/60' : 'text-blue-400/60'}`}>
+                <p className={`text-[12px] mb-4 ${isEvil ? 'text-red-400/60' : 'text-blue-400/60'}`}>
                   {isEvil ? 'Sluga Zla' : 'Vitez Dobra'}
                 </p>
+
+                {ROLE_FLAVORS[role] && (
+                  <p className="text-[12px] leading-relaxed text-slate-400 text-center px-2 mb-6">
+                    {ROLE_FLAVORS[role]}
+                  </p>
+                )}
 
                 {info.lines.length > 0 && (
                   <>

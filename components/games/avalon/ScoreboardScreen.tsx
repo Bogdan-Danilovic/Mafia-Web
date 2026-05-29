@@ -1,9 +1,13 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { AvalonRoom, getMissionTeamSize, getSabotagesRequired } from '@/lib/types/avalon';
 import { advanceFromScoreboard } from '@/lib/firestore/avalon';
 import { Button } from '@/components/ui/Button';
+import { LadyOfTheLakeToken } from './LadyOfTheLakeToken';
+import { LadyOfTheLakeModal } from './LadyOfTheLakeModal';
+import { LadyOfTheLakeLog } from './LadyOfTheLakeLog';
 
 interface Props {
   room: AvalonRoom;
@@ -12,6 +16,17 @@ interface Props {
 
 export function ScoreboardScreen({ room, playerId }: Props) {
   const isHost = room.hostId === playerId;
+  const [ladyOpen, setLadyOpen] = useState(false);
+
+  const lady = room.lady;
+  const gameContinuing = room.goodScore < 3 && room.evilScore < 3;
+  const isHolder = lady?.enabled && lady.currentHolder === playerId;
+  const holderName = lady?.currentHolder
+    ? room.players.find((p) => p.id === lady.currentHolder)?.name
+    : null;
+  const hasEligibleTarget = room.players.some(
+    (p) => p.isConnected && p.id !== lady?.currentHolder && !lady?.usedByPlayers.includes(p.id)
+  );
 
   return (
     <div className="relative flex flex-col items-center justify-center flex-1 px-8 h-screen-safe overflow-y-auto py-10">
@@ -105,6 +120,36 @@ export function ScoreboardScreen({ room, playerId }: Props) {
           </motion.div>
         )}
 
+        {lady?.enabled && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className="w-full flex flex-col gap-4 pt-2"
+          >
+            {holderName && (
+              <div className="flex items-center justify-center gap-2">
+                <LadyOfTheLakeToken size="md" />
+                <span className="text-[12px] text-slate-400">
+                  Gospu drži <span className="text-cyan-300 font-semibold">{holderName}</span>
+                </span>
+              </div>
+            )}
+
+            <LadyOfTheLakeLog room={room} />
+
+            {isHolder && gameContinuing && hasEligibleTarget && (
+              <Button
+                fullWidth
+                onClick={() => setLadyOpen(true)}
+                className="!bg-cyan-600/30 !text-cyan-200 hover:!bg-cyan-600/40"
+              >
+                💧 Koristi Gospu od Jezera
+              </Button>
+            )}
+          </motion.div>
+        )}
+
         {isHost && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -122,6 +167,16 @@ export function ScoreboardScreen({ room, playerId }: Props) {
           </motion.div>
         )}
       </div>
+
+      <AnimatePresence>
+        {ladyOpen && isHolder && (
+          <LadyOfTheLakeModal
+            room={room}
+            holderId={playerId}
+            onClose={() => setLadyOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
