@@ -1,5 +1,4 @@
 import GameGallery from '@/components/hub/GameGallery';
-import CustomCursor from '@/components/hub/CustomCursor';
 
 export default function HubPage() {
   return (
@@ -48,8 +47,6 @@ export default function HubPage() {
       <section className="relative z-10 w-full flex-1 flex items-center justify-center pb-24">
         <GameGallery />
       </section>
-
-      <CustomCursor />
     </main>
   );
 }
