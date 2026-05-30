@@ -21,5 +21,16 @@
     "doubleSabotageOnMission4FromPlayerCount": 7,
     "maxConsecutiveRejects": 5,
     "optionalRoles": ["percival", "mordred", "morgana", "oberon"]
+  },
+  "flip7": {
+    "targetScore": 200,
+    "flip7Count": 7,
+    "flip7Bonus": 15,
+    "deck": {
+      "total": 94,
+      "numbers": "jedan 0, pa N kopija broja N za 1..12 (79)",
+      "modifiers": ["x2", "+2", "+4", "+6", "+8", "+10"],
+      "actions": { "stop": 3, "druga_sansa": 3, "okreni_tri": 3 }
+    }
   }
 }

@@ -1,7 +1,9 @@
-export type GameType = 'impostor' | 'alias' | 'trivia' | 'avalon';
+export type GameType = 'impostor' | 'alias' | 'trivia' | 'avalon' | 'flip7';
 
 export type RoomStatus =
   | 'lobby'
+  | 'playing'
+  | 'round_end'
   | 'roleReveal'
   | 'discussion'
   | 'voting'
