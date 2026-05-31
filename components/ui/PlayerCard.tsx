@@ -75,7 +75,7 @@ export function PlayerCard({ player, isHost, isSelf, canKick, onKick, variant = 
         {canKick && !isSelf && (
           <button
             onClick={onKick}
-            className="absolute top-2 right-2 w-5 h-5 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            className="touch-show absolute top-2 right-2 w-5 h-5 flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
             style={{ background: 'rgba(239,68,68,0.15)', color: '#f87171' }}
           >
             <svg width="8" height="8" viewBox="0 0 12 12" fill="none">
@@ -115,7 +115,7 @@ export function PlayerCard({ player, isHost, isSelf, canKick, onKick, variant = 
       {canKick && !isSelf && (
         <button
           onClick={onKick}
-          className="ml-auto flex items-center justify-center w-8 h-8 text-slate-700 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
+          className="touch-show ml-auto flex items-center justify-center w-8 h-8 text-slate-700 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 cursor-pointer"
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
             <path d="M2 2L10 10M10 2L2 10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />

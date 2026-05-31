@@ -218,6 +218,11 @@ body {
 .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
+/* — Touch: reveal hover-only action buttons (e.g. kick) on touch devices — */
+@media (hover: none) {
+  .touch-show { opacity: 1 !important; }
+}
+
 .cursor-hidden,
 .cursor-hidden * { cursor: none !important; }
 
