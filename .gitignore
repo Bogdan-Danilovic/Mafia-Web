@@ -40,6 +40,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# unrelated nested project (separate git repo, not part of Game-Hub)
+/ECC/
+
 # IDE / AI tool configs
 .agent/
 .codebuddy/
