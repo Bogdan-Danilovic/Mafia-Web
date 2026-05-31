@@ -135,7 +135,7 @@ export function GameScreen({ room, playerId }: Props) {
                           : applyOkreniTri(room.code, p.id)
                       )
                     }
-                    className="px-3.5 py-2 rounded-xl text-[13px] font-semibold bg-amber-500/15 text-amber-200 border border-amber-500/30 hover:bg-amber-500/25 hover:border-amber-400 transition-colors disabled:opacity-40"
+                    className="min-h-[46px] px-4 py-2.5 rounded-xl text-[14px] font-semibold bg-amber-500/15 text-amber-200 border border-amber-500/30 active:bg-amber-500/30 hover:bg-amber-500/25 hover:border-amber-400 transition-colors disabled:opacity-40"
                   >
                     {p.id === playerId ? 'Ti' : p.name}
                   </button>

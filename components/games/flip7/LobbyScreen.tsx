@@ -54,8 +54,8 @@ export function LobbyScreen({ room, playerId }: Props) {
   }
 
   return (
-    <div className="relative flex flex-col flex-1 px-8 pt-20 pb-10 h-screen-safe overflow-y-auto">
-      <div className="relative w-full max-w-[360px] mx-auto flex flex-col gap-8 flex-1">
+    <div className="relative flex flex-col flex-1 px-6 pt-20 pb-10 h-screen-safe overflow-y-auto">
+      <div className="relative w-full max-w-[360px] mx-auto flex flex-col gap-7 flex-1">
         {/* Access code */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}>
           <p className="text-[10px] text-amber-200/40 tracking-[0.2em] uppercase mb-3">Pristupni kod</p>
@@ -132,9 +132,9 @@ export function LobbyScreen({ room, playerId }: Props) {
                   key={opt}
                   disabled={!isHost}
                   onClick={() => updateSettings(room.code, { targetScore: opt })}
-                  className={`py-2.5 rounded-xl text-[14px] font-bold tabular-nums transition-colors ${
+                  className={`min-h-[48px] rounded-xl text-[15px] font-bold tabular-nums transition-colors ${
                     active ? 'bg-amber-500 text-[#0a1626]' : 'bg-white/[0.04] text-amber-100/60'
-                  } ${isHost ? 'hover:bg-white/[0.08]' : 'cursor-default'}`}
+                  } ${isHost ? 'active:bg-white/[0.12] hover:bg-white/[0.08]' : 'cursor-default'}`}
                   style={active ? { boxShadow: '0 0 16px rgba(245,158,11,0.3)' } : undefined}
                 >
                   {opt}

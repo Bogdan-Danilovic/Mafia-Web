@@ -27,12 +27,12 @@ export function GameOverScreen({ room, playerId }: Props) {
   }
 
   return (
-    <div className="relative flex flex-col items-center justify-center flex-1 px-6 pt-20 pb-10 h-screen-safe overflow-y-auto">
+    <div className="relative flex flex-col items-center flex-1 px-6 pt-20 pb-10 h-screen-safe overflow-y-auto">
       <motion.div
         className="fixed inset-0 pointer-events-none"
         animate={{ background: 'radial-gradient(ellipse at center, rgba(245,158,11,0.10) 0%, transparent 70%)' }}
       />
-      <div className="relative w-full max-w-[360px] flex flex-col items-center gap-8">
+      <div className="relative w-full max-w-[360px] my-auto flex flex-col items-center gap-8">
         <motion.div
           initial={{ scale: 0.5, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}

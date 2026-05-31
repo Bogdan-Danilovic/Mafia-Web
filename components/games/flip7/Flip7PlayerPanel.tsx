@@ -79,11 +79,11 @@ export function Flip7PlayerPanel({ player, isSelf, focused }: Props) {
         </div>
       </div>
 
-      <div className="flex items-center gap-1 overflow-x-auto no-scrollbar pb-0.5 min-h-[46px]">
+      <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 min-h-[58px]">
         {cards.length === 0 ? (
           <span className="text-[11px] text-amber-100/25 italic">još bez karata</span>
         ) : (
-          cards.map((c, i) => <Flip7Card key={c.id} card={c} size={32} index={i} />)
+          cards.map((c, i) => <Flip7Card key={c.id} card={c} size={38} index={i} />)
         )}
         {player.hasDrugaSansa && (
           <span
