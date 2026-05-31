@@ -32,6 +32,13 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="sr" className={cn('h-full antialiased', spaceGrotesk.variable, 'font-sans')}>
+      <head>
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3801758630975994"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body
         className="min-h-full flex flex-col font-sans selection:bg-violet-500/30"
         style={{ background: 'var(--bg-base)', color: 'var(--text-primary)' }}
