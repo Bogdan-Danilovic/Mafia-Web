@@ -1,10 +1,5 @@
 import type { NextConfig } from 'next';
-
 const nextConfig: NextConfig = {
-  // Firebase Google sign-in koristi popup koji mora moći da komunicira sa
-  // opener prozorom. Restriktivan COOP (same-origin) blokira window.close i
-  // Firebase to prijavi kao auth/popup-blocked. same-origin-allow-popups
-  // zadržava izolaciju ali dozvoljava popup auth flow.
   async headers() {
     return [
       {
@@ -18,6 +13,13 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: '/__/auth/:path*',
+        destination: 'https://impostor-game-1bb73.firebaseapp.com/__/auth/:path*',
+      },
+    ];
+  },
 };
-
 export default nextConfig;
