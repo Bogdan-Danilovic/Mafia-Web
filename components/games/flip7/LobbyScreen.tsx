@@ -16,7 +16,7 @@ interface Props {
   playerId: string;
 }
 
-const MIN_PLAYERS = 3;
+const MIN_PLAYERS = 2;
 const TARGET_OPTIONS = [100, 150, 200, 250];
 
 export function LobbyScreen({ room, playerId }: Props) {

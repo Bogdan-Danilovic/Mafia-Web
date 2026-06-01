@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Flip7Room } from '@/lib/types/flip7';
 import { Button } from '@/components/ui/Button';
 import { Flip7PlayerPanel } from '@/components/games/flip7/Flip7PlayerPanel';
+import { AdBanner } from '@/components/ads/AdBanner';
 import {
   sayJosJednu,
   sayDosta,
@@ -73,6 +74,12 @@ export function GameScreen({ room, playerId }: Props) {
             </motion.p>
           )}
         </AnimatePresence>
+      </div>
+
+      {/* Diskretan reklamni bar — statičan, ne smeta igri, lagana zarada */}
+      <div className="flex-shrink-0 px-5 pb-1 opacity-70">
+        {/* TODO: zameniti slot ID — prikazuje se tokom igre */}
+        <AdBanner slot="TODO_SLOT_GAME" format="horizontal" className="rounded-lg" />
       </div>
 
       {/* Board */}
