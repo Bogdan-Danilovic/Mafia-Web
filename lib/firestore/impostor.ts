@@ -9,7 +9,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { ImpostorRoom, ImpostorPlayer, GameMode, Category, ImpostorSettings } from '@/lib/types/impostor';
-import { generateRoomCode, generatePlayerId, selectImpostors, getImpostorCount } from '@/lib/utils';
+import { generateRoomCode, generatePlayerId, selectImpostors, getImpostorCount, tallyVotes, checkWinCondition } from '@/lib/utils';
 import { getRandomPrompt } from '@/lib/prompts/index';
 
 import { roomRef, subscribeToRoom } from './core';
@@ -198,20 +198,20 @@ export async function castVote(
   });
 }
 
-export async function processVotes(
-  code: string,
-  eliminatedId: string | null,
-  winner: 'crew' | 'impostor' | null
-): Promise<void> {
+export async function processVotes(code: string): Promise<void> {
   const ref = roomRef(code);
   await runTransaction(db, async (tx) => {
     const snap = await tx.get(ref);
     if (!snap.exists()) return;
 
     const room = snap.data() as ImpostorRoom;
+    if (room.status !== 'voting') return;
+
+    const { eliminatedId } = tallyVotes(room.votes);
     const players = eliminatedId
       ? room.players.map((p) => (p.id === eliminatedId ? { ...p, isAlive: false } : p))
       : room.players;
+    const winner = eliminatedId ? checkWinCondition(players, room.impostorIds) : null;
 
     tx.update(ref, { status: 'reveal', eliminatedId, winner, players });
   });
@@ -252,6 +252,7 @@ export async function playAgain(code: string): Promise<void> {
       eliminatedId: null,
       winner: null,
       round: 1,
+      expiresAt: Date.now() + 24 * 60 * 60 * 1000,
     });
   });
 }

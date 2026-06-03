@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Room } from '@/lib/types';
 import { castVote, processVotes } from '@/lib/firestore';
-import { tallyVotes, checkWinCondition } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 
 interface Props {
@@ -51,17 +50,8 @@ export function VotingScreen({ room, playerId }: Props) {
   async function handleProcessVotes() {
     if (processing) return;
     setProcessing(true);
-    const { eliminatedId } = tallyVotes(room.votes);
-
-    const updatedPlayers = eliminatedId
-      ? room.players.map((p) => (p.id === eliminatedId ? { ...p, isAlive: false } : p))
-      : room.players;
-
-    const winner = eliminatedId
-      ? checkWinCondition(updatedPlayers, room.impostorIds)
-      : null;
-
-    await processVotes(room.code, eliminatedId, winner);
+    await processVotes(room.code);
+    setProcessing(false);
   }
 
   return (

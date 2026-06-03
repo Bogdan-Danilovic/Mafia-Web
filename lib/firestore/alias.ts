@@ -347,6 +347,7 @@ export async function playAgain(code: string): Promise<void> {
       roundResults: [],
       round: 1,
       roundStartedAt: null,
+      expiresAt: Date.now() + 24 * 60 * 60 * 1000,
     });
   });
 }

@@ -39,7 +39,7 @@ export interface BaseRoom {
   hostId: string;
   players: BasePlayer[];
   createdAt: number;
-  expiresAt?: number;
+  expiresAt: number;
   gameType: GameType;
   settings: GameSettings;
 }

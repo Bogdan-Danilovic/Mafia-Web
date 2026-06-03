@@ -7,6 +7,8 @@ import { GuestBanner } from '@/components/auth/GuestBanner';
 import { UsernameSetup } from '@/components/auth/UsernameSetup';
 import { HubNav } from '@/components/hub/HubNav';
 import { PresenceTracker } from '@/components/presence/PresenceTracker';
+import { Toaster } from 'sonner';
+import { ReconnectOverlay } from '@/components/shared/ReconnectOverlay';
 
 const spaceGrotesk = Space_Grotesk({
   variable: '--font-sans',
@@ -72,6 +74,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <GuestBanner />
         <UsernameSetup />
         <PresenceTracker />
+        <ReconnectOverlay />
+        <Toaster
+          theme="dark"
+          position="bottom-center"
+          toastOptions={{
+            style: {
+              background: '#0f1221',
+              border: '1px solid rgba(139,92,246,0.3)',
+              color: '#e2e8f0',
+              fontFamily: 'var(--font-sans)',
+            },
+          }}
+        />
       </body>
     </html>
   );

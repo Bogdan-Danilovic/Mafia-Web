@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ImpostorRoom } from '@/lib/types/impostor';
 import { castVote, processVotes } from '@/lib/firestore/impostor';
-import { tallyVotes, checkWinCondition } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 
 interface Props {
@@ -32,6 +31,15 @@ export function VotingScreen({ room, playerId }: Props) {
     if (playerId in room.votes) setHasVoted(true);
   }, [playerId, room.votes]);
 
+  // Auto-advance when all votes are in — host triggers processing
+  useEffect(() => {
+    if (allVoted && isHost && !processing) {
+      setProcessing(true);
+      processVotes(room.code).finally(() => setProcessing(false));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allVoted]);
+
   async function handleVote(id: string) {
     if (hasVoted || !isAlive) return;
     setSelected(id);
@@ -49,12 +57,8 @@ export function VotingScreen({ room, playerId }: Props) {
   async function handleProcess() {
     if (processing) return;
     setProcessing(true);
-    const { eliminatedId } = tallyVotes(room.votes);
-    const updated = eliminatedId
-      ? room.players.map((p) => (p.id === eliminatedId ? { ...p, isAlive: false } : p))
-      : room.players;
-    const winner = eliminatedId ? checkWinCondition(updated, room.impostorIds) : null;
-    await processVotes(room.code, eliminatedId, winner);
+    await processVotes(room.code);
+    setProcessing(false);
   }
 
   return (
