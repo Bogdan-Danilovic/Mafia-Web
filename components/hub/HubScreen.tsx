@@ -23,14 +23,24 @@ export function HubScreen() {
   const reduce = useReducedMotion();
   const [activeMood, setActiveMood] = useState(0);
   const [heroIndex, setHeroIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
   const heroRef = useRef<HTMLDivElement>(null);
 
   const featured = useMemo(() => GAMES.filter((g) => g.available).slice(0, 3), []);
   const moods = useMemo(() => ['Sve', ...Array.from(new Set(GAMES.flatMap((g) => g.tags)))], []);
-  const visible = useMemo(
-    () => (activeMood === 0 ? GAMES : GAMES.filter((g) => g.tags.includes(moods[activeMood]))),
-    [activeMood, moods]
-  );
+  const visible = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    let base = activeMood === 0 ? GAMES : GAMES.filter((g) => g.tags.includes(moods[activeMood]));
+    if (q) {
+      base = base.filter(
+        (g) =>
+          g.name.toLowerCase().includes(q) ||
+          g.shortDescription.toLowerCase().includes(q) ||
+          g.tags.some((t) => t.toLowerCase().includes(q))
+      );
+    }
+    return base;
+  }, [activeMood, moods, searchQuery]);
 
   useEffect(() => {
     if (reduce || featured.length <= 1) return;
@@ -49,11 +59,17 @@ export function HubScreen() {
 
   return (
     <div className="w-full" style={{ animation: 'gh-slide 0.3s ease both' }}>
-      {/* Search (visual placeholder) */}
-      <div className="mb-7 flex items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3">
+      {/* Search */}
+      <label className="mb-7 flex items-center gap-2.5 rounded-2xl border border-white/10 bg-white/[0.07] px-4 py-3 focus-within:border-white/25 transition-colors">
         <Search size={16} strokeWidth={2} className="shrink-0 text-white/35" />
-        <span className="text-[15px] text-white/30">Pretraži igrice…</span>
-      </div>
+        <input
+          type="search"
+          value={searchQuery}
+          onChange={(e) => { setSearchQuery(e.target.value); setActiveMood(0); }}
+          placeholder="Pretraži igrice…"
+          className="flex-1 bg-transparent text-[15px] text-white placeholder:text-white/30 outline-none"
+        />
+      </label>
 
       {/* Featured hero carousel */}
       <div ref={heroRef} className="gh-noscroll -mx-5 mb-2.5 flex overflow-x-hidden">
