@@ -53,7 +53,7 @@ export function LobbyScreen({ room, playerId }: Props) {
 
   const isHost = room.hostId === playerId;
   const playerCount = room.players.length;
-  const canStart = playerCount >= 4;
+  const canStart = playerCount >= 2;
 
   useEffect(() => {
     if (countdown === null) return;
@@ -105,10 +105,10 @@ export function LobbyScreen({ room, playerId }: Props) {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <div className="flex items-baseline justify-between mb-3">
             <p className="text-[10px] text-white/30 tracking-[0.2em] uppercase">Igrači · {playerCount}</p>
-            {playerCount < 4 && (
+            {playerCount < 2 && (
               <motion.p animate={{ opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 2 }}
                 className="text-[10px] text-amber-400/70">
-                čekamo još {4 - playerCount}
+                čekamo još {2 - playerCount}
               </motion.p>
             )}
           </div>
@@ -118,7 +118,7 @@ export function LobbyScreen({ room, playerId }: Props) {
             <motion.div
               className="h-px rounded-full"
               style={{ background: canStart ? `linear-gradient(90deg, ${ACCENT}, ${ACCENT2})` : 'rgba(245,158,11,0.5)' }}
-              animate={{ width: `${Math.min((playerCount / 4) * 100, 100)}%` }}
+              animate={{ width: `${Math.min((playerCount / 2) * 100, 100)}%` }}
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             />
           </div>
@@ -230,7 +230,7 @@ export function LobbyScreen({ room, playerId }: Props) {
                 boxShadow: canStart && !starting ? `0 4px 20px ${hexA(ACCENT, 0.35)}` : 'none',
               }}
             >
-              {starting ? 'Pokretanje...' : canStart ? 'Započni igru' : `Još ${4 - playerCount} igrača`}
+              {starting ? 'Pokretanje...' : canStart ? 'Započni igru' : `Još ${2 - playerCount} igrača`}
             </button>
           )}
         </div>

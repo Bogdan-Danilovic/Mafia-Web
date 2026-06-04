@@ -13,7 +13,7 @@ import { HostUnlockButton } from '@/components/ads/HostUnlockButton';
 import { DonationModal } from '@/components/ads/DonationModal';
 
 const ACCENT = '#f59e0b';
-const MIN_PLAYERS = 3;
+const MIN_PLAYERS = 2;
 
 const fadeIn = (delay = 0) => ({
   initial: { opacity: 0, y: 16 },

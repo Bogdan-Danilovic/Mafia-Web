@@ -10,7 +10,7 @@ import { startGame, leaveRoom } from '@/lib/firestore/gartic';
 import { hexA } from '@/lib/utils';
 
 const ACCENT = '#ec4899';
-const MIN_PLAYERS = 3;
+const MIN_PLAYERS = 2;
 
 const fadeIn = (delay = 0) => ({
   initial: { opacity: 0, y: 16 },

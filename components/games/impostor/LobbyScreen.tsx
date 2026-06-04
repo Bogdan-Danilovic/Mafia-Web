@@ -48,7 +48,7 @@ export function LobbyScreen({ room, playerId }: Props) {
 
   const isHost = room.hostId === playerId;
   const playerCount = room.players.length;
-  const canStart = playerCount >= 3;
+  const canStart = playerCount >= 2;
   const maxImpostors = Math.max(1, Math.floor(playerCount / 3));
   const showImpostorSettings = playerCount >= 5;
 
@@ -92,10 +92,10 @@ export function LobbyScreen({ room, playerId }: Props) {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <div className="flex items-baseline justify-between mb-3">
             <p className="text-[10px] text-slate-500 tracking-[0.2em] uppercase">Agenti · {playerCount}</p>
-            {playerCount < 3 && (
+            {playerCount < 2 && (
               <motion.p animate={{ opacity: [0.4, 1, 0.4] }} transition={{ repeat: Infinity, duration: 2 }}
                 className="text-[10px] text-amber-400/70">
-                čekamo još {3 - playerCount}
+                čekamo još {2 - playerCount}
               </motion.p>
             )}
           </div>
@@ -103,7 +103,7 @@ export function LobbyScreen({ room, playerId }: Props) {
           <div className="w-full h-px mb-4" style={{ background: 'rgba(255,255,255,0.04)' }}>
             <motion.div
               className={`h-px ${canStart ? 'bg-emerald-500/50' : 'bg-amber-500/40'}`}
-              animate={{ width: `${Math.min((playerCount / 3) * 100, 100)}%` }}
+              animate={{ width: `${Math.min((playerCount / 2) * 100, 100)}%` }}
               transition={{ type: 'spring', stiffness: 300, damping: 25 }}
             />
           </div>
@@ -244,7 +244,7 @@ export function LobbyScreen({ room, playerId }: Props) {
                 boxShadow: canStart ? '0 4px 16px rgba(220,38,38,0.4)' : undefined,
               }}
             >
-              {starting ? 'Pokretanje...' : canStart ? 'Započni misiju' : `Još ${3 - playerCount} agenta`}
+              {starting ? 'Pokretanje...' : canStart ? 'Započni misiju' : `Još ${2 - playerCount} agenta`}
             </Button>
           )}
         </div>
