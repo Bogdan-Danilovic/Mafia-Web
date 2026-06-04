@@ -74,7 +74,7 @@ export const GAMES: GameDefinition[] = [
   },
   {
     id: 'drawing',
-    name: 'Šta bi nacrtao?',
+    name: 'Scribbl',
     description: 'Jedan crta, ostali pogađaju — brzina donosi bodove.',
     shortDescription: 'Crtaj i pogađaj u realnom vremenu',
     icon: '✏️',
