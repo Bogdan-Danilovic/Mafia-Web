@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { GarticStroke } from '@/lib/types/gartic';
 
 interface Props {
@@ -32,7 +32,6 @@ export function GarticCanvas({ onStrokesChange, color, width, tool, externalClea
   const strokesRef = useRef<GarticStroke[]>([]);
   const currentRef = useRef<[number, number][]>([]);
   const isDrawingRef = useRef(false);
-  const [, forceRepaint] = useState(0);
 
   useEffect(() => {
     strokesRef.current = [];
@@ -79,7 +78,6 @@ export function GarticCanvas({ onStrokesChange, color, width, tool, externalClea
       };
       drawStrokes(ctx, [partial], canvas.width, canvas.height);
     }
-    forceRepaint((n) => n + 1);
   }
 
   function getPos(e: React.MouseEvent | React.TouchEvent): [number, number] | null {
