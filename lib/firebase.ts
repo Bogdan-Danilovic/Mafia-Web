@@ -13,6 +13,14 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 };
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-export const db = getFirestore(app);
-export const auth = getAuth(app);
+const app =
+  firebaseConfig.apiKey
+    ? getApps().length === 0
+      ? initializeApp(firebaseConfig)
+      : getApps()[0]
+    : null;
+
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+export const db = app ? getFirestore(app) : (null as unknown as ReturnType<typeof getFirestore>);
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+export const auth = app ? getAuth(app) : (null as unknown as ReturnType<typeof getAuth>);

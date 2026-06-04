@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
 import { AvalonRoom } from '@/lib/types/avalon';
 import { use } from 'react';

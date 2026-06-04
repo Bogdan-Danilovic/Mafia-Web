@@ -142,6 +142,20 @@ export const GAMES: GameDefinition[] = [
     available: false,
     tags: ['znanje', 'kviz'],
   },
+  {
+    id: 'cambio',
+    name: 'Cambio',
+    description: 'Kartaška igra pamćenja za 2–4 igrača. Skupi što manje bodova i pozovi Cambio!',
+    shortDescription: 'Kartaška igra pamćenja',
+    icon: '🃏',
+    accentColor: '#10b981',
+    minPlayers: 2,
+    maxPlayers: 4,
+    avgDuration: '15-30 min',
+    path: '/games/cambio',
+    available: true,
+    tags: ['karte', 'pamćenje', 'strategija', 'blef'],
+  },
 ];
 
 export function getGameById(id: GameType): GameDefinition | undefined {

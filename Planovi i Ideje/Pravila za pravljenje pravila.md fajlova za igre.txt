@@ -1,0 +1,61 @@
+Proces ekstrakcije pravila iz PDF-a
+1. Čitanje bez pretpostavki
+Prva stvar — ne oslanjam se na to što "znam" o igri. Čak i za poznate igre kao što je Cambio, fetchujem PDF/stranicu i čitam izvorni tekst. Greška koju drugi agenti prave je da popune praznine iz treninga umesto iz dokumenta.
+2. Inventar komponenti kao sidro
+Pre nego počnem sa pravilima, izvlačim kompletan spisak komponenti sa tačnim brojevima. Ovo je sidro za sve ostalo — ako formula (3 začina × 10 vrednosti × N primeraka) ne daje tačan ukupan broj koji PDF navodi, znam da negde grešim. Upravo sam ti tako uhvatio grešku u Papreno fajlu (PDF kaže 100, formula davala 90).
+3. Razlikovanje mehanika od primera
+PDF-ovi pravila uvek mešaju opšta pravila i primere. Aktivno razdvajam:
+
+"Morate objaviti veći broj" → mehanika (ide u pravila)
+"Npr. ako je prethodna bila 5 vasabi..." → primer (ide u napomenu/primer sekciju)
+
+Agenti koji to ne rade završe sa pravilima koja važe samo za jedan konkretni slučaj.
+4. Edge-case lov
+Tražim specifično napomene, boldovane rečenice i ikonice upozorenja u PDF-u — tu su skoro uvek edge-case-ovi. Na primer:
+
+"Ne gledajte karte licem nadole" → kazna koja se lako propusti
+"Ukoliko to ne uradite, morate da vratite kartu..." → uslov koji se aktivira samo ako igrač zaboravi
+
+5. Provera uzročno-posledičnih lanaca
+Za svaku akciju prolazim kroz ceo lanac: ko → šta radi → pod kojim uslovom → šta se dešava posle. Posebno pazim na stanje posle izuzetka (npr. posle pogrešnog lepljenja, posle izgubljenog izazova). To je mesto gde su pravila najčešće nepotpuna.
+6. Dvostruka verifikacija kritičnih detalja
+Detalji koji izgledaju trivijalno, a nisu:
+
+Smer okretanja karata ("licem nadole" vs "licem nagore")
+Ko vuče karte i koliko ("gubitnik vuče 2, ne 1")
+Redosled operacija ("najpre objavi, zatim svi se izjasne, tek onda sledeći igra")
+
+Kod implementacije ovo direktno utiče na state machine — jedno "licem nadole" znači da knownBy ostaje prazan niz.
+7. Začinjene/varijanta sekcije posebno
+Varijantna pravila uvek čitam kao delta nad osnovnim pravilima, ne kao posebnu igru. Za svaku ZAČINJENU kartu zapisujem tačno koja funkcija iz core logike se menja i kako. Ovo je direktno upotrebljivo za implementaciju (vidi tabelu u Papreno promptu).
+
+Pattern koji možeš poslati agentima
+1. FETCH izvor — nikad ne koristiti trening znanje kao primarni izvor
+
+2. INVENTAR KOMPONENTI PRVO
+   - Sve stavke sa tačnim brojevima
+   - Proveri: zbroj delova = ukupan broj na kutiji/PDF-u
+
+3. ZA SVAKU MEHANIKU:
+   - Ko inicira akciju?
+   - Pod kojim uslovom je akcija validna?
+   - Šta se dešava ako je akcija uspešna?
+   - Šta se dešava ako nije / ako igrač greši?
+   - Kako izgleda stanje igre POSLE ove akcije?
+
+4. EDGE-CASE LOV
+   - Sve napomene, boldovani tekst, ikonice upozorenja
+   - Svaki "ukoliko" i "osim ako"
+   - Šta se dešava kada je špil prazan?
+   - Šta ako više igrača istovremeno nešto rade?
+
+5. VERIFIKACIJA
+   - Prođi kroz kompletan potez od A do Z
+   - Proveri svaki broj (karata, poena, kaznenih karata)
+   - Proveri smer/redosled operacija
+
+6. ODVOJI
+   - Pravila (opšte) od Primera (konkretni slučaj)
+   - Core pravila od Varijanti (varijanta = delta, ne nova igra)
+   - UI/UX detalje od Logike igre (idu u različite sekcije prompta)
+Suština je da PDF tretiraš kao specifikaciju za state machine, ne kao tekst koji treba prepisati. Svaka rečenica je ili definicija stanja, tranzicija, ili uslov — i to eksplicitno mapiraš pre nego počneš da pišeš dokumentaciju.

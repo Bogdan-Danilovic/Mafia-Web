@@ -1,4 +1,4 @@
-export type GameType = 'impostor' | 'alias' | 'trivia' | 'avalon' | 'flip7' | 'drawing' | 'gartic' | 'uno' | 'spicy';
+export type GameType = 'impostor' | 'alias' | 'trivia' | 'avalon' | 'flip7' | 'drawing' | 'gartic' | 'uno' | 'spicy' | 'cambio';
 
 export type RoomStatus =
   | 'lobby'
@@ -28,13 +28,17 @@ export type RoomStatus =
   | 'challenge_window'
   | 'challenge_result'
   | 'last_card_window'
-  | 'spicy_trophy';
+  | 'spicy_trophy'
+  | 'initial_peek'
+  | 'last_round'
+  | 'scoring';
 
 export interface BasePlayer {
   id: string;
   name: string;
   isConnected: boolean;
   isHost?: boolean;
+  isAI?: boolean;
   joinedAt?: number;
 }
 

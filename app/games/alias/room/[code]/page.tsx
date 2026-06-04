@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
 import { AliasRoom } from '@/lib/types/alias';
 import { use } from 'react';

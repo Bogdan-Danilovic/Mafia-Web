@@ -1,4 +1,5 @@
 'use client';
+export const dynamic = 'force-dynamic';
 
 import { ImpostorRoom } from '@/lib/types/impostor';
 import { use } from 'react';

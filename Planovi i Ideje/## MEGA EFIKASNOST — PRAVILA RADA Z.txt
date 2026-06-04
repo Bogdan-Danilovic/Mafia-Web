@@ -1,0 +1,76 @@
+## MEGA EFIKASNOST — PRAVILA RADA ZA AGENTA
+
+### Pre nego što kreneš sa ijednom izmenom
+
+1. Pokreni skill skripte (Korak 0)
+2. `find . -name "*.tsx" -path "*/components/*" | head -40` — dobij mapu fajlova
+3. Pročitaj SVE layout fajlove odjednom (AppShell, Sidebar, TopBar, u jednom batch-u)
+4. Tek onda piši
+
+Nikad ne edituj fajl koji nisi prethodno pročitao u ovoj sesiji.
+
+---
+
+### Batch sve što možeš
+
+Loše:
+> Čitam Sidebar.tsx... editujem Sidebar.tsx... čitam TopBar.tsx... editujem TopBar.tsx...
+
+Dobro:
+> Čitam Sidebar.tsx, TopBar.tsx, AppShell.tsx, BottomNav (ako postoji) — sve odjednom.
+> Pišem izmene za sve 4 komponente redom bez prekida.
+
+Uvek grupiši fajlove koji su logički povezani i obradi ih u jednom potezu.
+
+---
+
+### Ne pitaj — odluči
+
+Ako nešto nije eksplicitno navedeno u promptu:
+- Primeni najbliži vizuelni pattern koji je već definisan
+- Zapiši odluku kao komentar u kodu: `{/* Design decision: korišten surface-2 umesto surface-3 zbog kontrasta */}`
+- Nastavi dalje
+
+Nikad ne staj da pitaš za detalj koji možeš sam razumno rešiti.
+
+---
+
+### TodoWrite na startu
+
+Pre prvog edita napiši kompletan todo listu svih fajlova koje ćeš dirati.
+Označavaj svaki kao završen odmah kad ga edituješ.
+Ako sesija pukne — sledeća sesija čita todo i zna tačno gde je stalo.
+
+---
+
+### Jedna promena = jedna stvar
+
+Ne mešaj CSS varijaable + komponentu + novi fajl u jedan edit.
+Svaki `str_replace` / `write_file` treba da radi tačno jednu logičku stvar.
+Lakše debug, ništa se ne gubi ako nešto zatreba rollback.
+
+---
+
+### `npm run build` — samo jednom, na kraju
+
+Ne pokreći build posle svakog fajla.
+Pokreni tek kada si završio ceo korak (npr. završen kompletan Layout, pa build check).
+Fiksuj sve TypeScript greške pre nego što prelaziš na sledeći korak.
+
+---
+
+### Ako naiđeš na grešku
+
+1. Pročitaj celu grešku, ne samo prvi red
+2. Nađi uzrok (skoro uvek: import koji ne postoji, prop tip koji se ne poklapa)
+3. Fiksuj na mestu — ne refaktorišući ceo fajl, samo tačno to
+4. Nastavi — ne prijavljuj svaki fix korisniku, samo napiši "Fiksovao X, nastavljam"
+
+---
+
+### Na kraju svakog koraka (1-12)
+
+Jedan red summaryja:
+> `✅ Korak 4 završen — Sidebar.tsx, TopBar.tsx, BottomNav.tsx, AppShell.tsx editovani`
+
+Ništa više. Bez opisa šta si uradio, korisnik vidi kod.
