@@ -38,7 +38,7 @@ export function HomeScreen() {
       const { code, playerId } = await createRoom(trimmedName);
       localStorage.setItem('playerId', playerId);
       localStorage.setItem('playerName', trimmedName);
-      router.push(`/room/${code}`);
+      router.push(`/games/cambio/room/${code}`);
     } catch (err) { showError(err instanceof Error ? err.message : 'Greška.'); setLoading(null); }
   }
 
@@ -51,7 +51,7 @@ export function HomeScreen() {
       if (e) { showError(e); setLoading(null); return; }
       localStorage.setItem('playerId', playerId);
       localStorage.setItem('playerName', trimmedName);
-      router.push(`/room/${code}`);
+      router.push(`/games/cambio/room/${code}`);
     } catch (err) { showError(err instanceof Error ? err.message : 'Greška.'); setLoading(null); }
   }
 
