@@ -8,12 +8,7 @@ import { usePlayer } from '@/hooks/usePlayer';
 import { ScreenTransition } from '@/components/shared/ScreenTransition';
 import { LobbyScreen } from '@/components/games/mafia/LobbyScreen';
 import { RoleRevealScreen } from '@/components/games/mafia/RoleRevealScreen';
-import { NightScreen } from '@/components/games/mafia/NightScreen';
-import { NightProcessingScreen } from '@/components/games/mafia/NightProcessingScreen';
-import { DayResultsScreen } from '@/components/games/mafia/DayResultsScreen';
-import { DayVoteScreen } from '@/components/games/mafia/DayVoteScreen';
-import { VoteResultsScreen } from '@/components/games/mafia/VoteResultsScreen';
-import { RevengeScreen } from '@/components/games/mafia/RevengeScreen';
+import { PlayingScreen } from '@/components/games/mafia/PlayingScreen';
 import { FinishedScreen } from '@/components/games/mafia/FinishedScreen';
 import { rejoinRoom, setPlayerDisconnected, subscribeToRoom } from '@/lib/firestore/mafia';
 import { usePresence } from '@/hooks/usePresence';
@@ -94,14 +89,8 @@ export default function RoomPage({ params }: { params: Promise<{ code: string }>
     <ScreenTransition screenKey={room.status}>
       {room.status === 'lobby' && <LobbyScreen room={room} playerId={player.id} />}
       {room.status === 'role-reveal' && <RoleRevealScreen room={room} playerId={player.id} />}
-      {room.status === 'night' && <NightScreen room={room} playerId={player.id} />}
-      {room.status === 'night-processing' && <NightProcessingScreen room={room} playerId={player.id} />}
-      {room.status === 'day-results' && <DayResultsScreen room={room} playerId={player.id} />}
-      {room.status === 'day-vote' && <DayVoteScreen room={room} playerId={player.id} />}
-      {room.status === 'vote-results' && <VoteResultsScreen room={room} playerId={player.id} />}
-      {room.status === 'revenge' && <RevengeScreen room={room} playerId={player.id} />}
+      {room.status === 'playing' && <PlayingScreen room={room} playerId={player.id} />}
       {room.status === 'finished' && <FinishedScreen room={room} playerId={player.id} />}
     </ScreenTransition>
   );
 }
-

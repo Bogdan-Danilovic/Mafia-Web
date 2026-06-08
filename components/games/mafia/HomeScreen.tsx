@@ -66,8 +66,7 @@ export function HomeScreen() {
     setLoading('join');
     try {
       const code = roomCode.trim().toUpperCase();
-      const { playerId, error: joinError } = await joinRoom(code, trimmedName);
-      if (joinError) { showError(joinError); setLoading(null); return; }
+      const playerId = await joinRoom(code, trimmedName);
       localStorage.setItem('playerId', playerId);
       localStorage.setItem('playerName', trimmedName);
       router.push(`/games/mafia/room/${code}`);

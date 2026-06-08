@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform } from 'framer-motion';
 import { MafiaRoom, ROLE_TEAM, ROLE_LABEL, ROLE_ICON, Role } from '@/lib/types/mafia';
-import { advanceToNight } from '@/lib/firestore/mafia';
+import { advanceToPlaying } from '@/lib/firestore/mafia';
 import { Button } from '@/components/ui/Button';
 
 interface Props { room: MafiaRoom; playerId: string; }
@@ -108,7 +108,7 @@ export function RoleRevealScreen({ room, playerId }: Props) {
           animate={{ opacity: 1 }}
           className="text-[10px] text-slate-500 tracking-[0.2em] uppercase"
         >
-          Noć {room.nightPhase === 0 ? '1' : room.nightPhase} · Uloge
+          Tvoja Uloga
         </motion.p>
 
         {/* Hold card */}
@@ -211,14 +211,14 @@ export function RoleRevealScreen({ room, playerId }: Props) {
           >
             <Button
               fullWidth
-              onClick={() => advanceToNight(room.code)}
+              onClick={() => advanceToPlaying(room.code)}
               className="!rounded-2xl !text-white"
               style={{
                 background: `linear-gradient(135deg, ${ACCENT}, ${ACCENT2})`,
                 boxShadow: '0 4px 16px rgba(220,38,38,0.4)',
               }}
             >
-              Svi su vidjeli → Noć počinje
+              Svi su vidjeli → Započni Igru
             </Button>
           </motion.div>
         )}

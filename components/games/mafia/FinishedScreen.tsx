@@ -36,7 +36,7 @@ export function FinishedScreen({ room, playerId }: Props) {
   const me = room.players[playerId];
   const myRole = me?.role;
   const myTeam = myRole ? ROLE_TEAM[myRole] : null;
-  const iWon = room.winnerIds.includes(playerId);
+  const iWon = myTeam === room.winner;
 
   useEffect(() => {
     if (!user || hasSaved.current || room.winner === null) return;
@@ -61,7 +61,6 @@ export function FinishedScreen({ room, playerId }: Props) {
   }
 
   const allPlayers = Object.values(room.players);
-  const nights = room.nightPhase;
 
   // Group players by team for display
   const mafiaSide = allPlayers.filter((p) => p.role && ROLE_TEAM[p.role] === 'mafia');
@@ -75,7 +74,8 @@ export function FinishedScreen({ room, playerId }: Props) {
         <p className="text-[9px] tracking-[0.2em] uppercase mb-2" style={{ color: `${color}80` }}>{label}</p>
         <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
           {players.map((p, i) => {
-            const isWinner = room.winnerIds.includes(p.id);
+            const team = p.role ? ROLE_TEAM[p.role] : null;
+            const isWinner = team === room.winner;
             return (
               <motion.div
                 key={p.id}
@@ -165,8 +165,6 @@ export function FinishedScreen({ room, playerId }: Props) {
               {/* Stats */}
               <div className="flex justify-center gap-4 mt-5">
                 {[
-                  { v: nights, l: nights === 1 ? 'noć' : 'noći' },
-                  { v: room.round, l: 'dana' },
                   { v: allPlayers.filter((p) => !p.isAlive).length, l: 'eliminirani' },
                 ].map((s, i) => (
                   <div key={i}
