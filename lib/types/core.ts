@@ -1,4 +1,4 @@
-export type GameType = 'impostor' | 'alias' | 'trivia' | 'avalon' | 'flip7' | 'drawing' | 'gartic' | 'uno' | 'spicy' | 'cambio';
+export type GameType = 'impostor' | 'alias' | 'trivia' | 'avalon' | 'flip7' | 'drawing' | 'gartic' | 'uno' | 'spicy' | 'cambio' | 'mafia';
 
 export type RoomStatus =
   | 'lobby'
@@ -31,7 +31,14 @@ export type RoomStatus =
   | 'spicy_trophy'
   | 'initial_peek'
   | 'last_round'
-  | 'scoring';
+  | 'scoring'
+  | 'role-reveal'
+  | 'night'
+  | 'night-processing'
+  | 'day-results'
+  | 'day-vote'
+  | 'vote-results'
+  | 'revenge';
 
 export interface BasePlayer {
   id: string;
